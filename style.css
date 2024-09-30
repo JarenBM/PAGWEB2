@@ -134,7 +134,7 @@ body {
 }
 
 .txt-p {
-    font-size: 19px;
+    font-size: 20px;
     color: #414247;
     padding: 0 250px;
     margin-bottom: 35px;
@@ -162,7 +162,7 @@ body {
 
 .coffee-1 h3 {
     color: #323337;
-    font-size: 20px;
+    font-size: 25px;
     margin-bottom: 20px;
 }
 
@@ -191,7 +191,8 @@ body {
 }
 
 .services-content p {
-    font-size: 19px;
+    font-size: 20px;
+    font-weight: 500;
     color: #c5c5c5;
     margin-bottom: 50px;
     padding: 0 100px;
@@ -208,13 +209,13 @@ body {
 }
 
 .services-1 img {
-    width: 25px;
+    width: 250px;
     margin-bottom: 15px;
 }
 
 .services-1 h3 {
-    color: #c09331;
-    font-size: 20px;
+    color: #f5b11e;
+    font-size: 25px;
 }
 
 .general {
@@ -252,7 +253,8 @@ h2 {
 }
 
 p {
-    font-size: 19px;
+    font-size: 25px;
+    font-weight: 500;
     color: #414247;
     margin: 25px 0 45px 0px;
 }
