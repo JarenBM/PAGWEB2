@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chifa Bonsái - Galería</title>
+    <title>Chifa Bonsái - Catálogo</title>
 
     <!-- Bootstrap CSS -->
     <link
@@ -39,7 +39,7 @@
               <a class="nav-link" href="index.html">Inicio</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="catalogo.html">Catálogo</a>
+              <a class="nav-link active" href="catalogo.html">Catálogo</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="carrito.html">Carrito</a>
@@ -48,7 +48,7 @@
               <a class="nav-link" href="nosotros.html">Nosotros</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="galeria.html">Galería</a>
+              <a class="nav-link" href="galeria.html">Galería</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="contacto.html">Contacto</a>
@@ -61,77 +61,145 @@
     <!-- ENCABEZADO -->
     <header
       class="text-center text-white bienvenida"
-      style="background-image: url('img/galeria-bg.jpg')"
+      style="background-image: url('img/catalogo-bg.jpg')"
     >
       <div class="container">
-        <h1>Nuestra Galería</h1>
-        <p class="lead">Un vistazo a nuestra cocina, platos y ambiente</p>
+        <h1>Nuestro Catálogo</h1>
+        <p class="lead">Platos preparados con pasión, tradición y frescura</p>
       </div>
     </header>
 
-    <!-- GALERÍA -->
+    <!-- CATÁLOGO DE PRODUCTOS -->
     <section class="py-5">
       <div class="container">
-        <h2 class="section-title text-center mb-5">Momentos que Inspiran</h2>
+        <div class="text-center mb-5">
+          <h2 class="section-title">Elige tu favorito</h2>
+          <p class="text-muted">Variedad de platos para todos los gustos</p>
+        </div>
         <div class="row g-4">
-          <!-- Imagen 1 -->
+          <!-- Plato 1 -->
           <div class="col-md-4">
-            <div class="card gallery-card">
+            <div class="card shadow-sm hover-card">
               <img
-                src="img/gal2.jpg"
+                src="img/arroz_chaufa-removebg-preview.png"
                 class="card-img-top"
-                alt="Plato especial"
+                alt="Arroz Chaufa"
               />
+              <div class="card-body text-center">
+                <h5 class="card-title">Arroz Chaufa</h5>
+                <p class="card-text text-muted">
+                  Clásico de la casa, servido con sabores auténticos.
+                </p>
+                <p class="fw-bold">S/. 18.00</p>
+                <a href="carrito.html" class="btn btn-danger btn-sm"
+                  ><i class="bi bi-cart-plus"></i> Agregar</a
+                >
+              </div>
             </div>
           </div>
-          <!-- Imagen 2 -->
+
+          <!-- Plato 2 -->
           <div class="col-md-4">
-            <div class="card gallery-card">
+            <div class="card shadow-sm hover-card">
               <img
-                src="img/gal1.jpg"
+                src="img/tallarines_saltados-removebg-preview.png"
                 class="card-img-top"
-                alt="Plato tradicional"
+                alt="Tallarín Saltado"
               />
+              <div class="card-body text-center">
+                <h5 class="card-title">Tallarín Saltado</h5>
+                <p class="card-text text-muted">
+                  Una explosión de sabor con verduras frescas.
+                </p>
+                <p class="fw-bold">S/. 20.00</p>
+                <a href="carrito.html" class="btn btn-danger btn-sm"
+                  ><i class="bi bi-cart-plus"></i> Agregar</a
+                >
+              </div>
             </div>
           </div>
-          <!-- Imagen 3 -->
+
+          <!-- Plato 3 -->
           <div class="col-md-4">
-            <div class="card gallery-card">
+            <div class="card shadow-sm hover-card">
               <img
-                src="img/CHIFA BONSÁI .jpg"
+                src="img/pollo chijaukay.jpg"
                 class="card-img-top"
-                alt="Ambiente del local"
+                alt="Pollo Chi Jau Kay"
               />
+              <div class="card-body text-center">
+                <h5 class="card-title">Pollo Chi Jau Kay</h5>
+                <p class="card-text text-muted">
+                  Crujiente por fuera, jugoso por dentro.
+                </p>
+                <p class="fw-bold">S/. 22.00</p>
+                <a href="carrito.html" class="btn btn-danger btn-sm"
+                  ><i class="bi bi-cart-plus"></i> Agregar</a
+                >
+              </div>
             </div>
           </div>
-          <!-- Imagen 4 -->
+
+          <!-- Plato 4 -->
           <div class="col-md-4">
-            <div class="card gallery-card">
+            <div class="card shadow-sm hover-card">
               <img
-                src="img/menu1.jpeg"
+                src="img/SOPAWANTAN.png"
                 class="card-img-top"
-                alt="Plato fusión"
+                alt="Sopa Wantán"
               />
+              <div class="card-body text-center">
+                <h5 class="card-title">Sopa Wantán</h5>
+                <p class="card-text text-muted">
+                  Reconfortante, ideal para compartir.
+                </p>
+                <p class="fw-bold">S/. 15.00</p>
+                <a href="carrito.html" class="btn btn-danger btn-sm"
+                  ><i class="bi bi-cart-plus"></i> Agregar</a
+                >
+              </div>
             </div>
           </div>
-          <!-- Imagen 5 -->
+
+          <!-- Plato 5 -->
           <div class="col-md-4">
-            <div class="card gallery-card">
+            <div class="card shadow-sm hover-card">
               <img
-                src="img/LocalDecoración.jpg"
+                src="img/rollitos primavera.jpg"
                 class="card-img-top"
-                alt="Decoración del local"
+                alt="Rollitos Primavera"
               />
+              <div class="card-body text-center">
+                <h5 class="card-title">Rollitos Primavera</h5>
+                <p class="card-text text-muted">
+                  Crocantes y sabrosos, perfectos como entrada.
+                </p>
+                <p class="fw-bold">S/. 12.00</p>
+                <a href="carrito.html" class="btn btn-danger btn-sm"
+                  ><i class="bi bi-cart-plus"></i> Agregar</a
+                >
+              </div>
             </div>
           </div>
-          <!-- Imagen 6 -->
+
+          <!-- Plato 6 -->
           <div class="col-md-4">
-            <div class="card gallery-card">
+            <div class="card shadow-sm hover-card">
               <img
-                src="img/FamiliaCB.jpg"
+                src="img/aeropuerto.jpg"
                 class="card-img-top"
-                alt="Plato familiar"
+                alt="Aeropuerto"
               />
+              <div class="card-body text-center">
+                <h5 class="card-title">Aeropuerto</h5>
+                <p class="card-text text-muted">
+                  Un plato contundente que combina lo mejor.
+                </p>
+                <p class="fw-bold">S/. 24.00</p>
+                <a href="carrito.html" class="btn btn-danger btn-sm"
+                  ><i class="bi bi-cart-plus"></i> Agregar</a
+                >
+              </div>
             </div>
           </div>
         </div>

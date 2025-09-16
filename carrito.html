@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chifa Bonsái - Contacto</title>
+    <title>Chifa Bonsái - Carrito</title>
 
     <!-- Bootstrap CSS -->
     <link
@@ -42,7 +42,7 @@
               <a class="nav-link" href="catalogo.html">Catálogo</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="carrito.html">Carrito</a>
+              <a class="nav-link active" href="carrito.html">Carrito</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="nosotros.html">Nosotros</a>
@@ -51,7 +51,7 @@
               <a class="nav-link" href="galeria.html">Galería</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="contacto.html">Contacto</a>
+              <a class="nav-link" href="contacto.html">Contacto</a>
             </li>
           </ul>
         </div>
@@ -61,104 +61,114 @@
     <!-- ENCABEZADO -->
     <header
       class="text-center text-white bienvenida"
-      style="background-image: url('img/contacto-bg.jpg')"
+      style="background-image: url('img/carrito-bg.jpg')"
     >
       <div class="container">
-        <h1>Contáctanos</h1>
-        <p class="lead">Estamos aquí para atenderte</p>
+        <h1>Tu Carrito</h1>
+        <p class="lead">Revisa tus pedidos antes de confirmar</p>
       </div>
     </header>
 
-    <!-- SECCIÓN CONTACTO -->
+    <!-- SECCIÓN CARRITO -->
     <section class="py-5">
       <div class="container">
-        <h2 class="section-title text-center mb-5">
-          Ponte en contacto con nosotros
-        </h2>
-        <div class="row g-4">
-          <!-- FORMULARIO -->
-          <div class="col-md-6">
-            <div class="card p-4 shadow-sm">
-              <form>
-                <div class="mb-3">
-                  <label for="nombre" class="form-label">Nombre</label>
+        <div class="table-responsive shadow-sm">
+          <table class="table align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Producto 1 -->
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img
+                      src="img/arroz_chaufa-removebg-preview.png"
+                      alt="Arroz Chaufa"
+                      class="img-thumbnail me-3"
+                      style="width: 80px"
+                    />
+                    <span>Arroz Chaufa</span>
+                  </div>
+                </td>
+                <td>S/. 18.00</td>
+                <td>
                   <input
-                    type="text"
-                    class="form-control"
-                    id="nombre"
-                    placeholder="Tu nombre completo"
-                    required
+                    type="number"
+                    value="1"
+                    min="1"
+                    class="form-control form-control-sm"
+                    style="width: 70px"
                   />
-                </div>
-                <div class="mb-3">
-                  <label for="correo" class="form-label"
-                    >Correo electrónico</label
-                  >
+                </td>
+                <td>S/. 18.00</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <!-- Producto 2 -->
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img
+                      src="img/tallarines_saltados-removebg-preview.png"
+                      alt="Tallarín Saltado"
+                      class="img-thumbnail me-3"
+                      style="width: 80px"
+                    />
+                    <span>Tallarín Saltado</span>
+                  </div>
+                </td>
+                <td>S/. 20.00</td>
+                <td>
                   <input
-                    type="email"
-                    class="form-control"
-                    id="correo"
-                    placeholder="ejemplo@email.com"
-                    required
+                    type="number"
+                    value="2"
+                    min="1"
+                    class="form-control form-control-sm"
+                    style="width: 70px"
                   />
-                </div>
-                <div class="mb-3">
-                  <label for="mensaje" class="form-label">Mensaje</label>
-                  <textarea
-                    class="form-control"
-                    id="mensaje"
-                    rows="5"
-                    placeholder="Escribe tu mensaje aquí..."
-                    required
-                  ></textarea>
-                </div>
-                <button type="submit" class="btn btn-custom w-100">
-                  Enviar mensaje
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <!-- INFO DE CONTACTO -->
-          <div class="col-md-6">
-            <div class="row g-4">
-              <div class="col-12">
-                <div class="card p-3 shadow-sm text-center">
-                  <i class="bi bi-geo-alt-fill fs-2 text-custom"></i>
-                  <h5 class="mt-2">Dirección</h5>
-                  <p>Av. Principal 123, Lima, Perú</p>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="card p-3 shadow-sm text-center">
-                  <i class="bi bi-telephone-fill fs-2 text-custom"></i>
-                  <h5 class="mt-2">Teléfono</h5>
-                  <p>+51 987 654 321</p>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="card p-3 shadow-sm text-center">
-                  <i class="bi bi-envelope-fill fs-2 text-custom"></i>
-                  <h5 class="mt-2">Correo</h5>
-                  <p>info@chifabonsai.com</p>
-                </div>
-              </div>
-            </div>
-          </div>
+                </td>
+                <td>S/. 40.00</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <!-- MAPA -->
-        <div class="mt-5">
-          <h3 class="text-center mb-4">Ubícanos</h3>
-          <div class="ratio ratio-16x9 shadow-sm">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3900.925!2d-77.04279368561707!3d-12.046374791471155!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c8d2c4c2b5d9%3A0x1234567890abcdef!2sLima%2C%20Per%C3%BA!5e0!3m2!1ses-419!2spe!4v1700000000000!5m2!1ses-419!2spe"
-              width="600"
-              height="450"
-              style="border: 0"
-              allowfullscreen=""
-              loading="lazy"
-            ></iframe>
+        <!-- RESUMEN -->
+        <div class="row justify-content-end mt-4">
+          <div class="col-md-4">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">Resumen</h5>
+                <p class="d-flex justify-content-between">
+                  <span>Subtotal:</span> <strong>S/. 58.00</strong>
+                </p>
+                <p class="d-flex justify-content-between">
+                  <span>Envío:</span> <strong>S/. 5.00</strong>
+                </p>
+                <hr />
+                <p class="d-flex justify-content-between">
+                  <span>Total:</span> <strong>S/. 63.00</strong>
+                </p>
+                <a href="contacto.html" class="btn btn-danger w-100 mt-3"
+                  >Finalizar Compra</a
+                >
+              </div>
+            </div>
           </div>
         </div>
       </div>
