@@ -3,23 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chifa Bonsái - Carrito</title>
+    <title>Carrito - Chifa Bonsái</title>
 
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-
-    <!-- Bootstrap Icons -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
 
-    <!-- CSS personalizado -->
-    <link rel="stylesheet" href="css/style.css" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/carrito.css" />
   </head>
+
   <body>
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -61,118 +61,252 @@
     <!-- ENCABEZADO -->
     <header
       class="text-center text-white bienvenida"
-      style="background-image: url('img/carrito-bg.jpg')"
+      style="background-image: url('img/fondo2.png'); background-size: cover"
     >
-      <div class="container">
-        <h1>Tu Carrito</h1>
-        <p class="lead">Revisa tus pedidos antes de confirmar</p>
+      <div class="container py-5">
+        <h1 class="fw-bold">Menú y Carrito</h1>
+        <p class="lead">Selecciona tus platos favoritos y confirma tu pedido</p>
       </div>
     </header>
 
-    <!-- SECCIÓN CARRITO -->
+    <!-- CONTENIDO PRINCIPAL -->
     <section class="py-5">
       <div class="container">
-        <div class="table-responsive shadow-sm">
-          <table class="table align-middle">
-            <thead class="table-dark">
-              <tr>
-                <th>Producto</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Total</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Producto 1 -->
-              <tr>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <img
-                      src="img/arroz_chaufa-removebg-preview.png"
-                      alt="Arroz Chaufa"
-                      class="img-thumbnail me-3"
-                      style="width: 80px"
-                    />
-                    <span>Arroz Chaufa</span>
-                  </div>
-                </td>
-                <td>S/. 18.00</td>
-                <td>
-                  <input
-                    type="number"
-                    value="1"
-                    min="1"
-                    class="form-control form-control-sm"
-                    style="width: 70px"
+        <div class="row">
+          <!-- LISTA DE PLATILLOS -->
+          <div class="col-lg-8">
+            <div class="row g-4">
+              <!-- Platillo 1 -->
+              <div class="col-md-6">
+                <div class="card h-100 text-center shadow-sm">
+                  <img
+                    src="img/arroz_chaufa-removebg-preview.png"
+                    class="card-img-top"
+                    alt="Arroz Chaufa"
                   />
-                </td>
-                <td>S/. 18.00</td>
-                <td>
-                  <button class="btn btn-sm btn-outline-danger">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </td>
-              </tr>
-              <!-- Producto 2 -->
-              <tr>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <img
-                      src="img/tallarines_saltados-removebg-preview.png"
-                      alt="Tallarín Saltado"
-                      class="img-thumbnail me-3"
-                      style="width: 80px"
-                    />
-                    <span>Tallarín Saltado</span>
+                  <div class="card-body">
+                    <h5 class="card-title">Arroz Chaufa</h5>
+                    <p class="card-text">
+                      Delicioso arroz salteado con pollo y verduras al estilo
+                      oriental.
+                    </p>
+                    <p class="fw-bold mb-3">S/. 18.00</p>
+                    <button
+                      class="btn btn-danger btn-add-cart"
+                      data-nombre="Arroz Chaufa"
+                      data-precio="18"
+                      data-imagen="img/arroz_chaufa-removebg-preview.png"
+                    >
+                      Agregar al carrito
+                    </button>
                   </div>
-                </td>
-                <td>S/. 20.00</td>
-                <td>
-                  <input
-                    type="number"
-                    value="2"
-                    min="1"
-                    class="form-control form-control-sm"
-                    style="width: 70px"
-                  />
-                </td>
-                <td>S/. 40.00</td>
-                <td>
-                  <button class="btn btn-sm btn-outline-danger">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                </div>
+              </div>
 
-        <!-- RESUMEN -->
-        <div class="row justify-content-end mt-4">
-          <div class="col-md-4">
+              <!-- Platillo 2 -->
+              <div class="col-md-6">
+                <div class="card h-100 text-center shadow-sm">
+                  <img
+                    src="img/tallarines_saltados-removebg-preview.png"
+                    class="card-img-top"
+                    alt="Tallarines Saltados"
+                  />
+                  <div class="card-body">
+                    <h5 class="card-title">Tallarines Saltados</h5>
+                    <p class="card-text">
+                      Fideos salteados al wok con carne y verduras frescas.
+                    </p>
+                    <p class="fw-bold mb-3">S/. 20.00</p>
+                    <button
+                      class="btn btn-danger btn-add-cart"
+                      data-nombre="Tallarines Saltados"
+                      data-precio="20"
+                      data-imagen="img/tallarines_saltados-removebg-preview.png"
+                    >
+                      Agregar al carrito
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Platillo 3 -->
+              <div class="col-md-6">
+                <div class="card h-100 text-center shadow-sm">
+                  <img
+                    src="img/pollo chijaukay.jpg"
+                    class="card-img-top"
+                    alt="Pollo Tamari"
+                  />
+                  <div class="card-body">
+                    <h5 class="card-title">Pollo Tamari</h5>
+                    <p class="card-text">
+                      Pollo chijaukay en salsa sabor oriental.
+                    </p>
+                    <p class="fw-bold mb-3">S/. 22.00</p>
+                    <button
+                      class="btn btn-danger btn-add-cart"
+                      data-nombre="Pollo Tamari"
+                      data-precio="22"
+                      data-imagen="img/pollo chijaukay.jpg"
+                    >
+                      Agregar al carrito
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Platillo 4 -->
+              <div class="col-md-6">
+                <div class="card h-100 text-center shadow-sm">
+                  <img
+                    src="img/Pollo-tipakay-removebg-preview.png"
+                    class="card-img-top"
+                    alt="Pollo Tipakay"
+                  />
+                  <div class="card-body">
+                    <h5 class="card-title">Pollo Tipakay</h5>
+                    <p class="card-text">
+                      Pollo crujiente bañado en salsa agridulce con piña y
+                      ajonjolí.
+                    </p>
+                    <p class="fw-bold mb-3">S/. 23.00</p>
+                    <button
+                      class="btn btn-danger btn-add-cart"
+                      data-nombre="Pollo Tipakay"
+                      data-precio="23"
+                      data-imagen="img/Pollo-tipakay-removebg-preview.png"
+                    >
+                      Agregar al carrito
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL DEL CARRITO -->
+          <div class="col-lg-4 mt-5 mt-lg-0">
             <div class="card shadow-sm">
               <div class="card-body">
-                <h5 class="card-title">Resumen</h5>
-                <p class="d-flex justify-content-between">
-                  <span>Subtotal:</span> <strong>S/. 58.00</strong>
-                </p>
-                <p class="d-flex justify-content-between">
-                  <span>Envío:</span> <strong>S/. 5.00</strong>
-                </p>
-                <hr />
-                <p class="d-flex justify-content-between">
-                  <span>Total:</span> <strong>S/. 63.00</strong>
-                </p>
-                <a href="contacto.html" class="btn btn-danger w-100 mt-3"
-                  >Finalizar Compra</a
-                >
+                <h5 class="card-title mb-3">Tu Carrito</h5>
+                <div class="table-responsive">
+                  <table class="table align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody id="cart-body"></tbody>
+                  </table>
+                </div>
+
+                <div class="mt-3">
+                  <p class="d-flex justify-content-between">
+                    <span>Subtotal:</span>
+                    <strong id="subtotal">S/. 0.00</strong>
+                  </p>
+                  <p class="d-flex justify-content-between">
+                    <span>Envío:</span> <strong id="envio">S/. 0.00</strong>
+                  </p>
+                  <hr />
+                  <p class="d-flex justify-content-between">
+                    <span>Total:</span> <strong id="total">S/. 0.00</strong>
+                  </p>
+                  <button
+                    id="finalizar-compra"
+                    class="btn btn-danger w-100 mt-3"
+                  >
+                    Finalizar Compra
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- MODALES -->
+    <!-- Modal de login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Iniciar sesión</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="loginForm">
+              <div class="mb-3">
+                <label for="loginEmail" class="form-label"
+                  >Correo electrónico</label
+                >
+                <input
+                  type="email"
+                  class="form-control"
+                  id="loginEmail"
+                  placeholder="ejemplo@correo.com"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="loginPassword" class="form-label">Contraseña</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="loginPassword"
+                  placeholder="********"
+                  required
+                />
+              </div>
+              <div id="loginAlert" class="alert alert-danger d-none">
+                Por favor, complete ambos campos.
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button id="btnLogin" type="button" class="btn btn-danger">
+              Iniciar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal éxito -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+          <div class="modal-body">
+            <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+            <h5 class="fw-bold">Compra realizada con éxito</h5>
+            <p class="text-muted">Gracias por confiar en Chifa Bonsái</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- FOOTER -->
     <footer class="text-white">
@@ -215,7 +349,8 @@
       </div>
     </footer>
 
-    <!-- Bootstrap JS -->
+    <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/carrito.js"></script>
   </body>
 </html>
