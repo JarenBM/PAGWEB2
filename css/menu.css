@@ -1,0 +1,100 @@
+/* =========================
+   GRID DE PRODUCTOS
+========================= */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  padding: 20px 0;
+}
+
+.menu-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: .35s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.menu-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+}
+
+.menu-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+/* HOVER DESCRIPCIÓN */
+.menu-card .info-hover {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  color: #fff;
+  display: flex;
+  align-items: flex-end;
+  padding: 15px;
+  font-size: .95rem;
+  transition: .35s ease;
+}
+
+.menu-card:hover .info-hover {
+  opacity: 1;
+}
+
+/* =========================
+   PRECIO Y BOTÓN
+========================= */
+.menu-info {
+  padding: 15px;
+}
+
+.menu-info h4 {
+  color: #000;
+  font-weight: 600;
+}
+
+.menu-info .price {
+  font-size: 1.1rem;
+  color: #e63946;
+  font-weight: 700;
+}
+
+.menu-info button {
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* =========================
+   CATEGORÍAS
+========================= */
+.categorias-container {
+  margin-bottom: 30px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.categoria-btn {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  background: #eee;
+  cursor: pointer;
+  font-weight: 500;
+  transition: .25s ease;
+}
+
+.categoria-btn:hover {
+  background: #e63946;
+  color: white;
+}
+
+.categoria-btn.active {
+  background: #e63946;
+  color: white;
+}

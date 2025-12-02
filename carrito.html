@@ -3,21 +3,85 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Carrito - Chifa Bonsái</title>
+    <title>Carrito – Chifa Bonsai</title>
 
-    <!-- Bootstrap -->
+    <!-- BOOTSTRAP -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+
+    <!-- ICONOS -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
 
-    <!-- CSS -->
+    <!-- TU CSS -->
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/carrito.css" />
+
+    <style>
+      /* === SIDEBAR CARRITO === */
+      #cart-sidebar {
+        position: fixed;
+        top: 100px; /* PARA NO TAPAR EL HEADER */
+        right: 0;
+        width: 450px;
+        height: calc(100% - 100px);
+        background: #ffffff;
+        border-left: 3px solid #c62828;
+        padding: 1rem;
+        overflow-y: auto;
+        z-index: 999;
+      }
+
+      /* Contenedor principal que deja espacio al carrito */
+      #main-content {
+        margin-right: 350px;
+        padding: 1rem;
+      }
+
+      .section-title {
+        font-weight: 700;
+        font-size: 1.7rem;
+        border-left: 6px solid #c62828;
+        padding-left: 10px;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+      /* Reservar espacio para el sidebar en pantallas grandes */
+      @media (min-width: 992px) {
+        body {
+          margin-right: 360px;
+        } /* deja espacio para el sidebar */
+      }
+
+      /* En pantallas pequeñas, hacemos que sidebar no esté fijo */
+      @media (max-width: 991px) {
+        #sidebar-carrito {
+          position: static;
+          width: 100%;
+          height: auto;
+          border-left: none;
+        }
+        body {
+          margin-right: 0;
+        }
+      }
+
+      /* Ajustes para tablas dentro del sidebar/modal */
+      #cart-body img {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+
+      .btn-add-cart {
+        white-space: normal;
+      }
+    </style>
   </head>
 
   <body>
@@ -39,10 +103,10 @@
               <a class="nav-link" href="index.html">Inicio</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="catalogo.html">Catálogo</a>
+              <a class="nav-link active" href="catalogo.html">Catálogo</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="carrito.html">Carrito</a>
+              <a class="nav-link" href="carrito.html">Carrito</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="nosotros.html">Nosotros</a>
@@ -61,252 +125,503 @@
     <!-- ENCABEZADO -->
     <header
       class="text-center text-white bienvenida"
-      style="background-image: url('img/fondo2.png'); background-size: cover"
+      style="background-image: url('img/catalogo-bg.jpg')"
     >
-      <div class="container py-5">
-        <h1 class="fw-bold">Menú y Carrito</h1>
-        <p class="lead">Selecciona tus platos favoritos y confirma tu pedido</p>
+      <div class="container">
+        <h1>Nuestro Catálogo</h1>
+        <p class="lead">Platos preparados con pasión, tradición y frescura</p>
       </div>
     </header>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <section class="py-5">
-      <div class="container">
-        <div class="row">
-          <!-- LISTA DE PLATILLOS -->
-          <div class="col-lg-8">
-            <div class="row g-4">
-              <!-- Platillo 1 -->
-              <div class="col-md-6">
-                <div class="card h-100 text-center shadow-sm">
-                  <img
-                    src="img/arroz_chaufa-removebg-preview.png"
-                    class="card-img-top"
-                    alt="Arroz Chaufa"
-                  />
-                  <div class="card-body">
-                    <h5 class="card-title">Arroz Chaufa</h5>
-                    <p class="card-text">
-                      Delicioso arroz salteado con pollo y verduras al estilo
-                      oriental.
-                    </p>
-                    <p class="fw-bold mb-3">S/. 18.00</p>
-                    <button
-                      class="btn btn-danger btn-add-cart"
-                      data-nombre="Arroz Chaufa"
-                      data-precio="18"
-                      data-imagen="img/arroz_chaufa-removebg-preview.png"
-                    >
-                      Agregar al carrito
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Platillo 2 -->
-              <div class="col-md-6">
-                <div class="card h-100 text-center shadow-sm">
-                  <img
-                    src="img/tallarines_saltados-removebg-preview.png"
-                    class="card-img-top"
-                    alt="Tallarines Saltados"
-                  />
-                  <div class="card-body">
-                    <h5 class="card-title">Tallarines Saltados</h5>
-                    <p class="card-text">
-                      Fideos salteados al wok con carne y verduras frescas.
-                    </p>
-                    <p class="fw-bold mb-3">S/. 20.00</p>
-                    <button
-                      class="btn btn-danger btn-add-cart"
-                      data-nombre="Tallarines Saltados"
-                      data-precio="20"
-                      data-imagen="img/tallarines_saltados-removebg-preview.png"
-                    >
-                      Agregar al carrito
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Platillo 3 -->
-              <div class="col-md-6">
-                <div class="card h-100 text-center shadow-sm">
-                  <img
-                    src="img/pollo chijaukay.jpg"
-                    class="card-img-top"
-                    alt="Pollo Tamari"
-                  />
-                  <div class="card-body">
-                    <h5 class="card-title">Pollo Tamari</h5>
-                    <p class="card-text">
-                      Pollo chijaukay en salsa sabor oriental.
-                    </p>
-                    <p class="fw-bold mb-3">S/. 22.00</p>
-                    <button
-                      class="btn btn-danger btn-add-cart"
-                      data-nombre="Pollo Tamari"
-                      data-precio="22"
-                      data-imagen="img/pollo chijaukay.jpg"
-                    >
-                      Agregar al carrito
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Platillo 4 -->
-              <div class="col-md-6">
-                <div class="card h-100 text-center shadow-sm">
-                  <img
-                    src="img/Pollo-tipakay-removebg-preview.png"
-                    class="card-img-top"
-                    alt="Pollo Tipakay"
-                  />
-                  <div class="card-body">
-                    <h5 class="card-title">Pollo Tipakay</h5>
-                    <p class="card-text">
-                      Pollo crujiente bañado en salsa agridulce con piña y
-                      ajonjolí.
-                    </p>
-                    <p class="fw-bold mb-3">S/. 23.00</p>
-                    <button
-                      class="btn btn-danger btn-add-cart"
-                      data-nombre="Pollo Tipakay"
-                      data-precio="23"
-                      data-imagen="img/Pollo-tipakay-removebg-preview.png"
-                    >
-                      Agregar al carrito
-                    </button>
-                  </div>
-                </div>
-              </div>
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div id="main-content" class="container">
+      <!-- ===========================
+             🥢 PLATOS PRINCIPALES
+        ============================ -->
+      <h2 class="section-title">Platos Principales</h2>
+      <div class="row g-4">
+        <!-- Los 8 platos principales -->
+        <!-- 1 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/Lomo-saltado-perudelights.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Lomo Saltado – S/22.00</h5>
+              <p class="card-text">
+                Clásico salteado peruano con carne jugosa, papas y arroz.
+              </p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="1"
+                data-name="Lomo Saltado"
+                data-price="22"
+                data-img="img/Lomo-saltado-perudelights.jpg"
+              >
+                Agregar
+              </button>
             </div>
           </div>
+        </div>
 
-          <!-- PANEL DEL CARRITO -->
-          <div class="col-lg-4 mt-5 mt-lg-0">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title mb-3">Tu Carrito</h5>
-                <div class="table-responsive">
-                  <table class="table align-middle">
-                    <thead class="table-light">
-                      <tr>
-                        <th>Producto</th>
-                        <th>Cant.</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody id="cart-body"></tbody>
-                  </table>
-                </div>
+        <!-- 2 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img
+              src="img/arroz_chaufa-removebg-preview.png"
+              class="card-img-top"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Arroz Chaufa – S/18.00</h5>
+              <p class="card-text">
+                Arroz frito al estilo oriental con pollo y verduras.
+              </p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="2"
+                data-name="Arroz Chaufa"
+                data-price="18"
+                data-img="img/arroz_chaufa-removebg-preview.png"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
 
-                <div class="mt-3">
-                  <p class="d-flex justify-content-between">
-                    <span>Subtotal:</span>
-                    <strong id="subtotal">S/. 0.00</strong>
-                  </p>
-                  <p class="d-flex justify-content-between">
-                    <span>Envío:</span> <strong id="envio">S/. 0.00</strong>
-                  </p>
-                  <hr />
-                  <p class="d-flex justify-content-between">
-                    <span>Total:</span> <strong id="total">S/. 0.00</strong>
-                  </p>
-                  <button
-                    id="finalizar-compra"
-                    class="btn btn-danger w-100 mt-3"
-                  >
-                    Finalizar Compra
-                  </button>
-                </div>
-              </div>
+        <!-- 3 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img
+              src="img/tallarines_saltados-removebg-preview.png"
+              class="card-img-top"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Tallarines Saltados – S/20.00</h5>
+              <p class="card-text">
+                Fideos salteados al wok con pollo y verduras.
+              </p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="3"
+                data-name="Tallarines Saltados"
+                data-price="20"
+                data-img="img/tallarines_saltados-removebg-preview.png"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/aeropuerto.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Aeropuerto – S/14.00</h5>
+              <p class="card-text">
+                Fusión del arroz chaufa con otros ingredientes .
+              </p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="4"
+                data-name="Aeropuerto de pollo"
+                data-price="14"
+                data-img="/img/aeropuerto.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/pollo chijaukay.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Pollo Chijaukay – S/22.00</h5>
+              <p class="card-text">Arroz frito mixto con pollo y chancho.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="5"
+                data-name="Pollo Chijaukay"
+                data-price="22"
+                data-img="img/pollo chijaukay.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/Chancho con tamarindo.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Chancho con tamarindo – S/18.00</h5>
+              <p class="card-text">
+                Piezas de cerdo en salsa oriental agridulce.
+              </p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="6"
+                data-name="Cerdo con tamarindo"
+                data-price="18"
+                data-img="img/Chancho con tamarindo.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img
+              src="img/Pollo-tipakay-removebg-preview.png"
+              class="card-img-top"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Tipakay – S/20.00</h5>
+              <p class="card-text">Pollo crocante con salsa dulce y piña.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="7"
+                data-name="Tipakay"
+                data-price="20"
+                data-img="img/Pollo-tipakay-removebg-preview.png"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img
+              src="img/kamlu-wantan-especial-galanes.jpg"
+              class="card-img-top"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Kam Lu Wantán – S/26.00</h5>
+              <p class="card-text">
+                Clásico plato oriental con wantanes fritos y verduras.
+              </p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="8"
+                data-name="Kam Lu Wantán"
+                data-price="26"
+                data-img="kamlu-wantan-especial-galanes.jpg"
+              >
+                Agregar
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- MODALES -->
-    <!-- Modal de login -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Iniciar sesión</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+      <!-- ===========================
+             ENTRADAS / ENROLLADOS
+        ============================ -->
+      <h2 class="section-title">Entradas / Enrollados</h2>
+      <div class="row g-4">
+        <!-- 1 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img
+              src="img/Enrollado en salsa de ostion.jpg"
+              class="card-img-top"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Enrollado en salsa de ostión – S/17.00</h5>
+              <p class="card-text">Enrollado relleno de verduras y carne.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="9"
+                data-name="Enrollado en salsa de ostión"
+                data-price="17"
+                data-img="img/Enrollado en salsa de ostion.jpg"
+              >
+                Agregar
+              </button>
+            </div>
           </div>
-          <div class="modal-body">
-            <form id="loginForm">
-              <div class="mb-3">
-                <label for="loginEmail" class="form-label"
-                  >Correo electrónico</label
-                >
-                <input
-                  type="email"
-                  class="form-control"
-                  id="loginEmail"
-                  placeholder="ejemplo@correo.com"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="loginPassword" class="form-label">Contraseña</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="loginPassword"
-                  placeholder="********"
-                  required
-                />
-              </div>
-              <div id="loginAlert" class="alert alert-danger d-none">
-                Por favor, complete ambos campos.
-              </div>
-            </form>
+        </div>
+
+        <!-- 2 cambiado -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/Sopa de pollo pequeña.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Sopa de Pollo (Pequeña) – S/5.00</h5>
+              <p class="card-text">Caldo ligero de pollo con fideos.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="10"
+                data-name="Sopa de Pollo Pequeña"
+                data-price="5"
+                data-img="img/sopa_pollo_pequena.jpg"
+              >
+                Agregar
+              </button>
+            </div>
           </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Cancelar
-            </button>
-            <button id="btnLogin" type="button" class="btn btn-danger">
-              Iniciar sesión
-            </button>
+        </div>
+
+        <!-- 3 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img
+              src="img/Pollo-con-verduras-como-en-el-Chifa.jpg"
+              class="card-img-top"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Pollo con verduras – S/10.00</h5>
+              <p class="card-text">Plato de verduras con trozo de pollo.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="11"
+                data-name="Pollo con verduras"
+                data-price="10"
+                data-img="img/Pollo-con-verduras-como-en-el-Chifa.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/Wantanes fritos.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Wantán Frito – S/8.00</h5>
+              <p class="card-text">Crujientes wantanes rellenos de pollo.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="12"
+                data-name="Wantán Frito"
+                data-price="8"
+                data-img="img/Wantanes fritos.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===========================
+                 SOPAS
+        ============================ -->
+      <h2 class="section-title">Sopas</h2>
+      <div class="row g-4">
+        <!-- 1 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img
+              src="img/Sopa de pollo con verduras.jpg"
+              class="card-img-top"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Sopa de Pollo con Verduras – S/12.00</h5>
+              <p class="card-text">
+                Caldo nutritivo con pollo, zanahoria y col.
+              </p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="13"
+                data-name="Sopa Pollo con Verduras"
+                data-price="12"
+                data-img="img/Sopa de pollo con verduras.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/Sopa de pollo con kion.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Sopa de Pollo con Kion – S/11.00</h5>
+              <p class="card-text">Caldo aromático con jengibre y pollo.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="14"
+                data-name="Sopa Pollo con Kion"
+                data-price="11"
+                data-img="img/Sopa de pollo con kion.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/Sopa de-wantan.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Sopa Wantán – S/10.00</h5>
+              <p class="card-text">Caldo oriental con wantanes rellenos.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="15"
+                data-name="Sopa Wantán"
+                data-price="10"
+                data-img="img/Sopa de-wantan.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/Sopa wantan especial.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Sopa wantan especial – S/15.00</h5>
+              <p class="card-text">Sopa ligera con tofu suave y verduras.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="16"
+                data-name="Sopa de Tofu"
+                data-price="15"
+                data-img="img/Sopa wantan especial.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===========================
+                BEBIDAS
+        ============================ -->
+      <h2 class="section-title">Bebidas</h2>
+      <div class="row g-4">
+        <!-- 1 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/Gaseosa_Inka 500ml.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Inca Kola 200 ml – S/4.00</h5>
+              <p class="card-text">
+                Gaseosa clásica peruana presentación personal.
+              </p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="17"
+                data-name="Inca Kola 500ml"
+                data-price="4"
+                data-img="Gaseosa_Inka 500ml.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img
+              src="img/inca-kola-sin-azucar-1-litro-.jpg"
+              class="card-img-top"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Inca Kola 1L – S/6.00</h5>
+              <p class="card-text">Botella familiar de 1 litro.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="18"
+                data-name="Inca Kola 1L"
+                data-price="6"
+                data-img="img/inca-kola-sin-azucar-1-litro-.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/te de jazmin -jarra.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Té de Jazmín (Jarra) – S/10.00</h5>
+              <p class="card-text">Té fresco aromático de jazmín.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="19"
+                data-name="Té de Jazmín"
+                data-price="10"
+                data-img="img/te de jazmin -jarra.jpg"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="col-md-3">
+          <div class="card">
+            <img src="img/mate de anis-jarra.jpg" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">Mate de Anís (Jarra) – S/10.00</h5>
+              <p class="card-text">Infusión caliente tradicional de anís.</p>
+              <button
+                class="btn btn-danger btn-add-cart"
+                data-id="20"
+                data-name="Mate de Anís"
+                data-price="10"
+                data-img="img/mate de anis-jarra.jpg"
+              >
+                Agregar
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- /main-content -->
 
-    <!-- Modal éxito -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-center">
-          <div class="modal-body">
-            <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
-            <h5 class="fw-bold">Compra realizada con éxito</h5>
-            <p class="text-muted">Gracias por confiar en Chifa Bonsái</p>
-          </div>
-          <div class="modal-footer justify-content-center">
-            <button
-              type="button"
-              class="btn btn-danger"
-              data-bs-dismiss="modal"
-            >
-              Cerrar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- ===========================
+            SIDEBAR CARRITO
+    ============================ -->
+    <aside id="cart-sidebar">
+      <h4 class="text-center mb-3">🛒 Mi Carrito</h4>
+
+      <table class="table">
+        <tbody id="cart-body"></tbody>
+      </table>
+
+      <hr />
+
+      <p>Subtotal: <span id="subtotal">S/0.00</span></p>
+      <p>Envío: <span id="envio">S/0.00</span></p>
+      <p>Total: <span id="total">S/0.00</span></p>
+
+      <button id="finalizar-compra" class="btn btn-danger w-100 mt-3">
+        Finalizar Compra
+      </button>
+    </aside>
 
     <!-- FOOTER -->
     <footer class="text-white">
@@ -349,8 +664,48 @@
       </div>
     </footer>
 
-    <!-- JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JS BOOTSTRAP -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 2) Inicializador con TU URL + ANON KEY -->
+    <script src="js/supabaseClient.js"></script>
+
+    <!-- TU LÓGICA DEL CARRITO -->
     <script src="js/carrito.js"></script>
+    <!-- ===========================
+     MODAL DE INICIO DE SESIÓN
+=========================== -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title">Iniciar sesión</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <div id="loginAlert" class="alert alert-danger d-none"></div>
+
+            <div class="mb-3">
+              <label class="form-label">Correo</label>
+              <input type="email" id="loginEmail" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Contraseña</label>
+              <input type="password" id="loginPassword" class="form-control" />
+            </div>
+          </div>
+
+          <div class="modal-footer border-0">
+            <button id="btnLogin" class="btn btn-danger w-100">Ingresar</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
