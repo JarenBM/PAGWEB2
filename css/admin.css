@@ -1,0 +1,167 @@
+/* css/admin.css */
+.admin-container {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.admin-sidebar {
+    width: 250px;
+    background: #1a1a1a;
+    color: white;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: all 0.3s;
+}
+
+.admin-content {
+    margin-left: 250px;
+    padding: 20px;
+    width: calc(100% - 250px);
+}
+
+@media (max-width: 768px) {
+    .admin-sidebar {
+        width: 70px;
+    }
+    
+    .admin-content {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+    }
+    
+    .sidebar-text {
+        display: none;
+    }
+}
+
+.sidebar-brand {
+    padding: 20px;
+    background: #c62828;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.sidebar-nav {
+    padding: 20px 0;
+}
+
+.sidebar-nav .nav-link {
+    color: #ddd;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
+    border-left: 4px solid transparent;
+}
+
+.sidebar-nav .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-left-color: #c62828;
+}
+
+.sidebar-nav .nav-link.active {
+    background: rgba(198, 40, 40, 0.2);
+    color: white;
+    border-left-color: #c62828;
+}
+
+.sidebar-nav .nav-link i {
+    width: 24px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.admin-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+.admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.metric-card {
+    text-align: center;
+    padding: 25px 15px;
+}
+
+.metric-card .metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #c62828;
+    margin: 10px 0;
+}
+
+.metric-card .metric-label {
+    color: #666;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.admin-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-table th {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    padding: 15px;
+}
+
+.admin-table td {
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.btn-admin {
+    background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-admin:hover {
+    background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+}
+
+.btn-admin-outline {
+    background: transparent;
+    border: 2px solid #c62828;
+    color: #c62828;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-admin-outline:hover {
+    background: #c62828;
+    color: white;
+    transform: translateY(-2px);
+}
