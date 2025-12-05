@@ -3,104 +3,615 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Chifa Bonsai</title>
+    <title>Iniciar Sesión - Chifa Bonsai</title>
+
+    <!-- Bootstrap 5 -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="/css/global.css" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary-red: #c62828;
+        --primary-red-dark: #b71c1c;
+        --accent-gold: #ffb74d;
+        --dark-bg: #121212;
+        --light-bg: #f8f5f0;
+        --text-dark: #2c1810;
+        --text-light: #fff;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, var(--dark-bg) 0%, #2c1810 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Patrón de fondo sutil */
+      body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(
+            circle at 20% 80%,
+            rgba(198, 40, 40, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(255, 183, 77, 0.08) 0%,
+            transparent 50%
+          );
+        z-index: -1;
+      }
+
+      .login-container {
+        width: 100%;
+        max-width: 420px;
+        animation: fadeIn 0.8s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+          0 0 0 1px rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.15);
+      }
+
+      /* Header con gradiente elegante */
+      .login-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-red) 0%,
+          var(--primary-red-dark) 100%
+        );
+        color: var(--text-light);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .login-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+      }
+
+      .brand-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 15px;
+      }
+
+      .brand-logo i {
+        font-size: 2.2rem;
+        background: rgba(255, 255, 255, 0.2);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .brand-logo h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.8rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin: 0;
+      }
+
+      .brand-tagline {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        letter-spacing: 1px;
+        font-weight: 300;
+      }
+
+      /* Cuerpo del login */
+      .login-body {
+        padding: 2.5rem;
+      }
+
+      .login-title {
+        font-family: "Playfair Display", serif;
+        color: var(--text-dark);
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        position: relative;
+      }
+
+      .login-title::after {
+        content: "";
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(
+          to right,
+          var(--primary-red),
+          var(--accent-gold)
+        );
+        margin: 10px auto 0;
+        border-radius: 2px;
+      }
+
+      /* Estilos de formulario */
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-dark);
+        font-weight: 500;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      .form-label i {
+        color: var(--primary-red);
+      }
+
+      .input-group-custom {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid #e0d6c9;
+        transition: all 0.3s ease;
+        background: white;
+      }
+
+      .input-group-custom:focus-within {
+        border-color: var(--primary-red);
+        box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .input-group-custom .input-group-text {
+        background: #f8f5f0;
+        border: none;
+        padding: 0 18px;
+        color: var(--primary-red);
+        font-size: 1.1rem;
+      }
+
+      .input-group-custom .form-control {
+        border: none;
+        padding: 15px;
+        font-size: 1rem;
+        background: transparent;
+        height: 56px;
+      }
+
+      .input-group-custom .form-control:focus {
+        box-shadow: none;
+        background: transparent;
+      }
+
+      .input-group-custom .form-control::placeholder {
+        color: #999;
+        font-style: italic;
+      }
+
+      .btn-toggle-password {
+        background: transparent;
+        border: none;
+        padding: 0 18px;
+        color: #666;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+
+      .btn-toggle-password:hover {
+        color: var(--primary-red);
+      }
+
+      /* Botón de login */
+      .btn-login {
+        background: linear-gradient(
+          135deg,
+          var(--primary-red) 0%,
+          var(--primary-red-dark) 100%
+        );
+        border: none;
+        color: white;
+        padding: 18px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .btn-login::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .btn-login:hover::before {
+        left: 100%;
+      }
+
+      .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(198, 40, 40, 0.3);
+      }
+
+      .btn-login:active {
+        transform: translateY(-1px);
+      }
+
+      .btn-login:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      /* Enlace de retorno */
+      .back-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e0d6c9;
+      }
+
+      .back-link a {
+        color: var(--text-dark);
+        text-decoration: none;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        padding: 8px 16px;
+        border-radius: 8px;
+      }
+
+      .back-link a:hover {
+        color: var(--primary-red);
+        background: rgba(198, 40, 40, 0.05);
+        transform: translateX(-5px);
+      }
+
+      /* Credenciales de prueba */
+      .test-credentials {
+        background: linear-gradient(135deg, #f8f5f0 0%, #fff9f0 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        border: 2px dashed #e0d6c9;
+        position: relative;
+      }
+
+      .test-credentials::before {
+        content: "🔐";
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 0 15px;
+        font-size: 1.2rem;
+      }
+
+      .test-title {
+        color: var(--primary-red);
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .credentials-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .credential-card {
+        background: white;
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #e0d6c9;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+
+      .credential-card:hover {
+        border-color: var(--primary-red);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .credential-role {
+        color: var(--primary-red);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+      }
+
+      .credential-email {
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        margin-bottom: 5px;
+        word-break: break-all;
+      }
+
+      .credential-password {
+        font-family: monospace;
+        background: #f5f5f5;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        color: #333;
+        border: 1px solid #ddd;
+      }
+
+      /* Alerta de error */
+      .alert-custom {
+        border-radius: 12px;
+        border: none;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        animation: slideDown 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert-custom.alert-danger {
+        background: linear-gradient(135deg, #fee 0%, #fff0f0 100%);
+        color: #c62828;
+        border-left: 4px solid #c62828;
+      }
+
+      .alert-custom.alert-success {
+        background: linear-gradient(135deg, #f0fff4 0%, #f8fff0 100%);
+        color: #2e7d32;
+        border-left: 4px solid #2e7d32;
+      }
+
+      /* Spinner de carga */
+      .spinner-border {
+        width: 1.2rem;
+        height: 1.2rem;
+        border-width: 2px;
+      }
+
+      /* Responsive */
+      @media (max-width: 576px) {
+        .login-container {
+          max-width: 100%;
+        }
+
+        .login-body {
+          padding: 2rem 1.5rem;
+        }
+
+        .credentials-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .brand-logo {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .brand-logo h1 {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
   </head>
-  <body class="bg-light">
-    <div class="container">
-      <div class="row justify-content-center align-items-center min-vh-100">
-        <div class="col-md-6 col-lg-5">
-          <div class="card shadow-lg border-0">
-            <div class="card-body p-5">
-              <!-- Logo -->
-              <div class="text-center mb-4">
-                <h2 class="text-danger">
-                  <i class="fas fa-utensils me-2"></i>Chifa Bonsai
-                </h2>
-                <p class="text-muted">Panel de administración</p>
+  <body>
+    <div class="login-container">
+      <div class="login-card">
+        <!-- Header elegante -->
+        <div class="login-header">
+          <div class="brand-logo">
+            <i class="fas fa-utensils"></i>
+            <h1>Chifa Bonsai</h1>
+          </div>
+          <p class="brand-tagline">Sabores que conquistan</p>
+        </div>
+
+        <!-- Cuerpo del formulario -->
+        <div class="login-body">
+          <h2 class="login-title">Acceso al Sistema</h2>
+
+          <!-- Alerta de mensajes -->
+          <div id="loginAlert" class="alert-custom d-none" role="alert">
+            <i class="fas fa-info-circle"></i>
+            <span id="alertMessage"></span>
+          </div>
+
+          <!-- Formulario -->
+          <form id="loginForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="email">
+                <i class="fas fa-envelope"></i>
+                Correo electrónico
+              </label>
+              <div class="input-group-custom">
+                <span class="input-group-text">
+                  <i class="fas fa-user-circle"></i>
+                </span>
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control"
+                  placeholder="ejemplo@chifabonsai.com"
+                  required
+                />
               </div>
+              <div class="invalid-feedback">
+                Por favor, ingresa un email válido.
+              </div>
+            </div>
 
-              <!-- Formulario de login -->
-              <form id="loginForm">
-                <div class="mb-3">
-                  <label class="form-label">Correo electrónico</label>
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="fas fa-envelope"></i>
-                    </span>
-                    <input
-                      type="email"
-                      id="email"
-                      class="form-control"
-                      placeholder="admin@chifabonsai.com"
-                      value="admin@chifabonsai.com"
-                      required
-                    />
-                  </div>
-                </div>
+            <div class="form-group">
+              <label class="form-label" for="password">
+                <i class="fas fa-lock"></i>
+                Contraseña
+              </label>
+              <div class="input-group-custom">
+                <span class="input-group-text">
+                  <i class="fas fa-key"></i>
+                </span>
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  class="btn-toggle-password"
+                  id="togglePassword"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">La contraseña es requerida.</div>
+            </div>
 
-                <div class="mb-3">
-                  <label class="form-label">Contraseña</label>
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="fas fa-lock"></i>
-                    </span>
-                    <input
-                      type="password"
-                      id="password"
-                      class="form-control"
-                      placeholder="••••••••"
-                      value="Admin123!"
-                      required
-                    />
-                    <button
-                      class="btn btn-outline-secondary"
-                      type="button"
-                      id="togglePassword"
-                    >
-                      <i class="fas fa-eye"></i>
-                    </button>
-                  </div>
-                </div>
+            <button type="submit" class="btn-login" id="submitBtn">
+              <i class="fas fa-sign-in-alt"></i>
+              <span id="btnText">Ingresar al Sistema</span>
+            </button>
 
-                <div class="d-grid gap-2">
-                  <button type="submit" class="btn btn-danger btn-lg">
-                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-                  </button>
-                </div>
+            <div class="back-link">
+              <a href="/catalogo.html">
+                <i class="fas fa-arrow-left"></i>
+                Volver al catálogo principal
+              </a>
+            </div>
+          </form>
 
-                <div class="text-center mt-3">
-                  <a
-                    href="/catalogo.html"
-                    class="text-decoration-none text-muted"
-                  >
-                    <i class="fas fa-store me-1"></i>Volver al catálogo
-                  </a>
-                </div>
-              </form>
-
-              <!-- Credenciales de prueba -->
-              <div class="mt-4 pt-3 border-top">
-                <h6 class="text-muted mb-2">
-                  <i class="fas fa-key me-1"></i>Credenciales de prueba:
-                </h6>
-                <div class="small">
-                  <div class="mb-1">
-                    <strong>Admin:</strong> admin@chifabonsai.com / Admin123!
-                  </div>
-                  <div>
-                    <strong>Cliente:</strong> cliente@chifabonsai.com /
-                    Cliente123!
-                  </div>
-                </div>
+          <!-- Credenciales de prueba (click para autocompletar) -->
+          <div class="test-credentials">
+            <div class="test-title">
+              <i class="fas fa-key"></i>
+              Credenciales de Prueba (Click para usar)
+            </div>
+            <div class="credentials-grid">
+              <div
+                class="credential-card"
+                onclick="fillCredentials('admin@chifabonsai.com', 'Admin123!')"
+              >
+                <div class="credential-role">Administrador</div>
+                <div class="credential-email">admin@chifabonsai.com</div>
+                <div class="credential-password">Admin123!</div>
+              </div>
+              <div
+                class="credential-card"
+                onclick="fillCredentials('cliente@chifabonsai.com', 'Cliente123!')"
+              >
+                <div class="credential-role">Cliente</div>
+                <div class="credential-email">cliente@chifabonsai.com</div>
+                <div class="credential-password">Cliente123!</div>
               </div>
             </div>
           </div>
@@ -108,80 +619,231 @@
       </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Importar módulos -->
+    <!-- Nuestros módulos -->
     <script type="module">
+      // Importar supabase
       import { supabase } from "/js/supabaseClient.js";
-      import Auth from "/js/auth.js";
 
-      // Configurar formulario
+      // Inicializar cuando el DOM esté listo
       document.addEventListener("DOMContentLoaded", function () {
+        console.log("🎨 Login elegante cargado");
+
+        // Elementos del DOM
         const loginForm = document.getElementById("loginForm");
-        const togglePassword = document.getElementById("togglePassword");
+        const emailInput = document.getElementById("email");
         const passwordInput = document.getElementById("password");
+        const togglePassword = document.getElementById("togglePassword");
+        const submitBtn = document.getElementById("submitBtn");
+        const btnText = document.getElementById("btnText");
+        const loginAlert = document.getElementById("loginAlert");
+        const alertMessage = document.getElementById("alertMessage");
+        const alertIcon = loginAlert.querySelector("i");
 
-        // Toggle mostrar/ocultar contraseña
-        if (togglePassword) {
-          togglePassword.addEventListener("click", function () {
-            const type =
-              passwordInput.getAttribute("type") === "password"
-                ? "text"
-                : "password";
-            passwordInput.setAttribute("type", type);
-            this.innerHTML =
-              type === "password"
-                ? '<i class="fas fa-eye"></i>'
-                : '<i class="fas fa-eye-slash"></i>';
-          });
-        }
+        // NO verificar sesión existente al cargar (solo después del login)
 
-        // Manejar login
-        if (loginForm) {
-          loginForm.addEventListener("submit", async function (e) {
-            e.preventDefault();
+        // 1. Configurar toggle para mostrar/ocultar contraseña
+        togglePassword.addEventListener("click", function () {
+          const type =
+            passwordInput.getAttribute("type") === "password"
+              ? "text"
+              : "password";
+          passwordInput.setAttribute("type", type);
+          this.innerHTML =
+            type === "password"
+              ? '<i class="fas fa-eye"></i>'
+              : '<i class="fas fa-eye-slash"></i>';
+        });
 
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value.trim();
+        // 2. Configurar validación del formulario
+        loginForm.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          e.stopPropagation();
 
-            // Mostrar loading
-            const submitBtn = loginForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML =
-              '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...';
-            submitBtn.disabled = true;
+          // Resetear alerta
+          hideAlert();
 
-            try {
-              const { data, error } = await Auth.login(email, password);
+          // Validar formulario
+          if (!loginForm.checkValidity()) {
+            loginForm.classList.add("was-validated");
+            return;
+          }
 
-              if (error) {
-                alert("Error: " + error.message);
+          // Obtener valores
+          const email = emailInput.value.trim();
+          const password = passwordInput.value.trim();
+
+          // Validaciones adicionales
+          if (!email || !password) {
+            showAlert("Por favor, completa todos los campos.", "danger");
+            return;
+          }
+
+          if (!validateEmail(email)) {
+            showAlert("Por favor, ingresa un email válido.", "danger");
+            return;
+          }
+
+          // Deshabilitar botón y mostrar loading
+          setLoading(true);
+
+          try {
+            console.log("🔐 Intentando login con:", email);
+
+            // Intentar login con Supabase
+            const { data, error } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
+
+            if (error) {
+              console.error("❌ Error login:", error);
+
+              // Mostrar error amigable
+              let errorMsg = "Credenciales incorrectas";
+              if (error.message.includes("Invalid login credentials")) {
+                errorMsg = "Email o contraseña incorrectos";
+              } else if (error.message.includes("Email not confirmed")) {
+                errorMsg = "Por favor, confirma tu email primero";
+              } else if (error.message.includes("network")) {
+                errorMsg = "Error de conexión. Verifica tu internet.";
               } else {
-                // Redirigir según rol
-                await Auth.redirectByRole();
+                errorMsg = "Error: " + error.message;
               }
-            } catch (error) {
-              console.error("Error en login:", error);
-              alert("Error al iniciar sesión");
-            } finally {
-              // Restaurar botón
-              submitBtn.innerHTML = originalText;
-              submitBtn.disabled = false;
+
+              showAlert(errorMsg, "danger");
+              setLoading(false);
+              return;
             }
+
+            console.log("✅ Login exitoso:", data.user.email);
+            showAlert("¡Acceso concedido! Redirigiendo...", "success");
+
+            // Obtener roles del usuario
+            const { data: roles, error: rolesError } = await supabase
+              .from("user_roles")
+              .select("role")
+              .eq("user_id", data.user.id);
+
+            if (rolesError) {
+              console.warn("⚠️ Error obteniendo roles:", rolesError);
+            }
+
+            // Determinar a dónde redirigir según rol
+            const userRoles = roles?.map((r) => r.role) || [];
+            console.log("🎭 Roles del usuario:", userRoles);
+
+            // Pequeña pausa antes de redirigir para mostrar mensaje de éxito
+            setTimeout(() => {
+              if (
+                userRoles.includes("admin") ||
+                userRoles.includes("superadmin")
+              ) {
+                console.log("🚀 Redirigiendo a dashboard admin...");
+                window.location.href = "/Pages/admin/dashboard.html";
+              } else if (
+                userRoles.includes("chef") ||
+                userRoles.includes("delivery")
+              ) {
+                console.log("🚀 Redirigiendo a panel empleado...");
+                window.location.href = "/Pages/empleado/pedidos.html";
+              } else {
+                console.log("🚀 Redirigiendo a catálogo...");
+                window.location.href = "/catalogo.html";
+              }
+            }, 1500);
+          } catch (error) {
+            console.error("💥 Error inesperado:", error);
+            showAlert("Error inesperado: " + error.message, "danger");
+            setLoading(false);
+          }
+        });
+
+        // 3. Función para validar email
+        function validateEmail(email) {
+          const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return re.test(email);
+        }
+
+        // 4. Función para mostrar alerta
+        function showAlert(message, type = "danger") {
+          alertMessage.textContent = message;
+
+          // Cambiar icono según tipo
+          if (type === "success") {
+            alertIcon.className = "fas fa-check-circle";
+          } else if (type === "danger") {
+            alertIcon.className = "fas fa-exclamation-circle";
+          } else {
+            alertIcon.className = "fas fa-info-circle";
+          }
+
+          // Cambiar clase de alerta
+          loginAlert.className = `alert-custom alert-${type}`;
+          loginAlert.classList.remove("d-none");
+
+          // Auto-ocultar después de segundos
+          setTimeout(hideAlert, type === "success" ? 2000 : 5000);
+        }
+
+        // 5. Función para ocultar alerta
+        function hideAlert() {
+          loginAlert.classList.add("d-none");
+        }
+
+        // 6. Función para loading state
+        function setLoading(loading) {
+          if (loading) {
+            btnText.textContent = "Procesando...";
+            submitBtn.innerHTML =
+              '<div class="spinner-border spinner-border-sm" role="status"></div> Procesando...';
+            submitBtn.disabled = true;
+            emailInput.disabled = true;
+            passwordInput.disabled = true;
+          } else {
+            btnText.textContent = "Ingresar al Sistema";
+            submitBtn.innerHTML =
+              '<i class="fas fa-sign-in-alt"></i><span id="btnText">Ingresar al Sistema</span>';
+            submitBtn.disabled = false;
+            emailInput.disabled = false;
+            passwordInput.disabled = false;
+          }
+        }
+
+        // 7. Para debugging: mostrar configuración de Supabase
+        console.log("🔧 Supabase configurado:", {
+          url: supabase.supabaseUrl
+            ? supabase.supabaseUrl.substring(0, 30) + "..."
+            : "No configurada",
+          hasKey: !!supabase.supabaseKey,
+        });
+
+        // 8. Efecto de entrada para inputs
+        const inputs = document.querySelectorAll(".form-control");
+        inputs.forEach((input) => {
+          input.addEventListener("focus", function () {
+            this.parentElement.classList.add("focused");
           });
-        }
 
-        // Verificar si ya está logueado
-        checkIfAlreadyLogged();
+          input.addEventListener("blur", function () {
+            this.parentElement.classList.remove("focused");
+          });
+        });
+
+        // 9. Hacer la función fillCredentials disponible globalmente
+        window.fillCredentials = function (email, password) {
+          document.getElementById("email").value = email;
+          document.getElementById("password").value = password;
+          showAlert(
+            `Credenciales de ${
+              email.split("@")[0]
+            } cargadas. Ahora haz click en "Ingresar al Sistema".`,
+            "success"
+          );
+        };
       });
-
-      async function checkIfAlreadyLogged() {
-        const isAuthenticated = await Auth.isAuthenticated();
-        if (isAuthenticated) {
-          await Auth.redirectByRole();
-        }
-      }
     </script>
   </body>
 </html>

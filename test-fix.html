@@ -1,0 +1,83 @@
+<!-- PAGWEB2/test-fix.html -->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Reparación RLS</title>
+  </head>
+  <body>
+    <h1>Test Reparación RLS</h1>
+    <div id="result"></div>
+
+    <script type="module">
+      import { supabase } from "./js/supabaseClient.js";
+
+      async function testFix() {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "<p>🔄 Probando reparación...</p>";
+
+        try {
+          // 1. Test productos (debería funcionar sin auth)
+          const { data: products, error: pError } = await supabase
+            .from("products")
+            .select("id, name")
+            .limit(2);
+
+          if (pError) {
+            resultDiv.innerHTML += `<p style="color: red;">❌ Productos: ${pError.message}</p>`;
+          } else {
+            resultDiv.innerHTML += `<p style="color: green;">✅ Productos: ${
+              products?.length || 0
+            } encontrados</p>`;
+          }
+
+          // 2. Test categorías
+          const { data: categories, error: cError } = await supabase
+            .from("categories")
+            .select("id, name");
+
+          if (cError) {
+            resultDiv.innerHTML += `<p style="color: red;">❌ Categorías: ${cError.message}</p>`;
+          } else {
+            resultDiv.innerHTML += `<p style="color: green;">✅ Categorías: ${
+              categories?.length || 0
+            } encontradas</p>`;
+          }
+
+          // 3. Test user_roles (requiere auth)
+          const { data: roles, error: rError } = await supabase
+            .from("user_roles")
+            .select("user_id, role")
+            .limit(2);
+
+          if (rError) {
+            resultDiv.innerHTML += `<p style="color: orange;">⚠️ User Roles: ${rError.message} (esperado sin auth)</p>`;
+          } else {
+            resultDiv.innerHTML += `<p style="color: green;">✅ User Roles: ${
+              roles?.length || 0
+            } encontrados</p>`;
+          }
+
+          // 4. Test simple insert (solo para verificar permisos)
+          const { error: testError } = await supabase
+            .from("products")
+            .select("count", { count: "exact", head: true });
+
+          if (testError) {
+            resultDiv.innerHTML += `<p style="color: red;">❌ Count test: ${testError.message}</p>`;
+          } else {
+            resultDiv.innerHTML += `<p style="color: green;">✅ Count test: OK</p>`;
+          }
+
+          resultDiv.innerHTML +=
+            '<p style="color: blue;">🎯 Si ves productos y categorías OK, el problema está resuelto</p>';
+        } catch (error) {
+          resultDiv.innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+        }
+      }
+
+      testFix();
+    </script>
+  </body>
+</html>

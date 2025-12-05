@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Conexión Supabase</title>
+  </head>
+  <body>
+    <h1>Test Conexión Supabase - Chifa Bonsai</h1>
+    <div
+      id="result"
+      style="
+        padding: 20px;
+        background: #f5f5f5;
+        margin: 20px;
+        border-radius: 10px;
+      "
+    ></div>
+
+    <script type="module">
+      import { supabase } from "./js/supabaseClient.js";
+
+      async function testConnection() {
+        const resultDiv = document.getElementById("result");
+
+        try {
+          resultDiv.innerHTML =
+            '<p style="color: blue;">🔄 Probando conexión...</p>';
+
+          // Test 1: Obtener productos
+          const { data: products, error: productsError } = await supabase
+            .from("products")
+            .select("*")
+            .limit(3);
+
+          if (productsError) {
+            resultDiv.innerHTML += `<p style="color: red;">❌ Error productos: ${productsError.message}</p>`;
+          } else {
+            resultDiv.innerHTML += `<p style="color: green;">✅ Productos: ${products.length} encontrados</p>`;
+            console.log("Productos:", products);
+          }
+
+          // Test 2: Obtener categorías
+          const { data: categories, error: categoriesError } = await supabase
+            .from("categories")
+            .select("*");
+
+          if (categoriesError) {
+            resultDiv.innerHTML += `<p style="color: red;">❌ Error categorías: ${categoriesError.message}</p>`;
+          } else {
+            resultDiv.innerHTML += `<p style="color: green;">✅ Categorías: ${categories.length} encontradas</p>`;
+            console.log("Categorías:", categories);
+          }
+
+          // Test 3: Verificar tablas de usuarios
+          const { data: profiles, error: profilesError } = await supabase
+            .from("profiles")
+            .select("count", { count: "exact", head: true });
+
+          if (profilesError) {
+            resultDiv.innerHTML += `<p style="color: red;">❌ Error perfiles: ${profilesError.message}</p>`;
+          } else {
+            resultDiv.innerHTML += `<p style="color: green;">✅ Tabla perfiles: OK</p>`;
+          }
+
+          // Test 4: Verificar auth
+          const { data: authData } = await supabase.auth.getSession();
+          if (authData.session) {
+            resultDiv.innerHTML += `<p style="color: green;">✅ Auth configurado</p>`;
+          } else {
+            resultDiv.innerHTML += `<p style="color: orange;">⚠️ No hay sesión activa (normal)</p>`;
+          }
+
+          resultDiv.innerHTML += `<p style="color: green; font-weight: bold;">🎉 ¡Pruebas completadas!</p>`;
+        } catch (error) {
+          resultDiv.innerHTML = `<p style="color: red;">❌ Error crítico: ${error.message}</p>`;
+          console.error("Error completo:", error);
+        }
+      }
+
+      testConnection();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Login Real</title>
+  </head>
+  <body>
+    <h1>🧪 Test Login Real con Supabase</h1>
+
+    <div
+      style="
+        margin: 20px;
+        padding: 20px;
+        background: #f5f5f5;
+        border-radius: 10px;
+      "
+    >
+      <h3>Probando credenciales:</h3>
+
+      <div>
+        <label>Email: </label>
+        <input type="email" id="email" value="admin@chifabonsai.com" />
+      </div>
+
+      <div style="margin-top: 10px">
+        <label>Password: </label>
+        <input type="password" id="password" value="Admin123!" />
+      </div>
+
+      <button
+        onclick="testLogin()"
+        style="margin-top: 20px; padding: 10px 20px"
+      >
+        🔐 Probar Login
+      </button>
+    </div>
+
+    <div id="result" style="margin-top: 30px"></div>
+
+    <script type="module">
+      import { supabase } from "./js/supabaseClient.js";
+
+      window.testLogin = async function () {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const resultDiv = document.getElementById("result");
+
+        resultDiv.innerHTML = "<p>🔄 Intentando login...</p>";
+
+        try {
+          // 1. Login
+          const { data: authData, error: authError } =
+            await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
+
+          if (authError) {
+            resultDiv.innerHTML = `<p style="color: red;">❌ Login falló: ${authError.message}</p>`;
+            return;
+          }
+
+          resultDiv.innerHTML = `
+                    <p style="color: green;">✅ Login exitoso!</p>
+                    <p>Usuario: ${authData.user.email}</p>
+                    <p>ID: ${authData.user.id.substring(0, 8)}...</p>
+                `;
+
+          // 2. Ahora SÍ deberíamos poder ver el perfil propio
+          const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", authData.user.id)
+            .single();
+
+          if (profileError) {
+            resultDiv.innerHTML += `<p style="color: orange;">⚠️ Error perfil: ${profileError.message}</p>`;
+          } else {
+            resultDiv.innerHTML += `
+                        <p style="color: green;">✅ Perfil obtenido:</p>
+                        <p>Nombre: ${profile.full_name}</p>
+                        <p>Teléfono: ${profile.phone}</p>
+                    `;
+          }
+
+          // 3. Verificar roles
+          const { data: roles, error: rolesError } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", authData.user.id);
+
+          if (rolesError) {
+            resultDiv.innerHTML += `<p style="color: orange;">⚠️ Error roles: ${rolesError.message}</p>`;
+          } else if (roles && roles.length > 0) {
+            resultDiv.innerHTML += `<p style="color: green;">✅ Roles: ${roles
+              .map((r) => r.role)
+              .join(", ")}</p>`;
+
+            // 4. Redirigir según rol
+            if (
+              roles.some((r) => r.role === "admin" || r.role === "superadmin")
+            ) {
+              resultDiv.innerHTML += `<p style="color: blue;">🎯 Eres admin! Serías redirigido al dashboard</p>`;
+              // En tu app real: window.location.href = '/admin/dashboard.html'
+            } else {
+              resultDiv.innerHTML += `<p style="color: blue;">🎯 Eres cliente! Serías redirigido al catálogo</p>`;
+              // En tu app real: window.location.href = '/catalogo.html'
+            }
+          }
+
+          // 5. Logout
+          setTimeout(async () => {
+            await supabase.auth.signOut();
+            resultDiv.innerHTML +=
+              '<p style="color: gray;">🔓 Sesión cerrada</p>';
+          }, 3000);
+        } catch (error) {
+          resultDiv.innerHTML = `<p style="color: red;">❌ Error: ${error.message}</p>`;
+        }
+      };
+    </script>
+  </body>
+</html>
