@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Usuarios - Chifa Bonsai</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <!-- DataTables -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
+    />
+
+    <style>
+      :root {
+        --primary-red: #c62828;
+        --primary-red-dark: #b71c1c;
+        --accent-gold: #ffb74d;
+        --dark-bg: #121212;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+      }
+
+      .sidebar {
+        min-height: 100vh;
+        background: linear-gradient(180deg, var(--dark-bg) 0%, #2c1810 100%);
+        color: white;
+        padding: 0;
+        position: fixed;
+        width: 250px;
+        z-index: 1000;
+      }
+
+      .sidebar-header {
+        padding: 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-header h4 {
+        margin: 0;
+        color: var(--accent-gold);
+        font-weight: 600;
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 1rem 1.5rem;
+        border-left: 4px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: white;
+        background: rgba(198, 40, 40, 0.2);
+        border-left-color: var(--primary-red);
+      }
+
+      .nav-link i {
+        width: 20px;
+        margin-right: 10px;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .page-header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .table-container {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .avatar-placeholder {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+      }
+
+      .badge-role {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+      }
+
+      .role-superadmin {
+        background: #dc3545;
+        color: white;
+      }
+      .role-admin {
+        background: #0d6efd;
+        color: white;
+      }
+      .role-chef {
+        background: #ffc107;
+        color: #212529;
+      }
+      .role-delivery {
+        background: #20c997;
+        color: white;
+      }
+      .role-cliente {
+        background: #6c757d;
+        color: white;
+      }
+
+      .user-actions {
+        min-width: 120px;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .nav-link span {
+          display: none;
+        }
+
+        .sidebar .nav-link i {
+          margin-right: 0;
+          width: 100%;
+          text-align: center;
+        }
+
+        .sidebar-header h4,
+        .sidebar-header small {
+          display: none;
+        }
+
+        .main-content {
+          margin-left: 70px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h4><i class="fas fa-utensils me-2"></i>Chifa Bonsai</h4>
+        <small>Panel de Administración</small>
+      </div>
+
+      <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="dashboard.html">
+          <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="productos.html">
+          <i class="fas fa-utensils"></i> <span>Productos</span>
+        </a>
+        <a class="nav-link" href="pedidos.html">
+          <i class="fas fa-shopping-cart"></i> <span>Pedidos</span>
+        </a>
+        <a class="nav-link active" href="usuarios.html">
+          <i class="fas fa-users"></i> <span>Usuarios</span>
+        </a>
+        <a class="nav-link" href="reportes.html">
+          <i class="fas fa-chart-bar"></i> <span>Reportes</span>
+        </a>
+        <a class="nav-link" href="configuracion.html">
+          <i class="fas fa-cog"></i> <span>Configuración</span>
+        </a>
+
+        <div class="mt-auto p-3">
+          <button class="btn btn-outline-danger btn-sm w-100" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="mb-1">
+              <i class="fas fa-users me-2"></i>Gestión de Usuarios
+            </h3>
+            <p class="text-muted mb-0">
+              Administra usuarios, roles y permisos del sistema
+            </p>
+          </div>
+          <div>
+            <button class="btn btn-primary" id="newUserBtn">
+              <i class="fas fa-user-plus me-1"></i> Nuevo Usuario
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mt-4">
+          <div class="col-md-3 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-primary text-white rounded p-3 me-3">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="totalUsers">0</h5>
+                    <small class="text-muted">Total Usuarios</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-success text-white rounded p-3 me-3">
+                    <i class="fas fa-user-tie"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="adminCount">0</h5>
+                    <small class="text-muted">Administradores</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-warning text-white rounded p-3 me-3">
+                    <i class="fas fa-utensils"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="chefCount">0</h5>
+                    <small class="text-muted">Chefs</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-info text-white rounded p-3 me-3">
+                    <i class="fas fa-motorcycle"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="deliveryCount">0</h5>
+                    <small class="text-muted">Repartidores</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters and Search -->
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            <span class="badge bg-secondary filter-badge" data-role="all"
+              >Todos</span
+            >
+            <span class="badge bg-primary filter-badge" data-role="admin"
+              >Administradores</span
+            >
+            <span class="badge bg-warning filter-badge" data-role="chef"
+              >Chefs</span
+            >
+            <span class="badge bg-info filter-badge" data-role="delivery"
+              >Repartidores</span
+            >
+            <span class="badge bg-success filter-badge" data-role="cliente"
+              >Clientes</span
+            >
+            <span class="badge bg-danger filter-badge" data-role="superadmin"
+              >Super Admin</span
+            >
+          </div>
+
+          <div class="d-flex gap-2">
+            <select class="form-select" style="max-width: 150px" id="sortBy">
+              <option value="newest">Más recientes</option>
+              <option value="oldest">Más antiguos</option>
+              <option value="name-asc">Nombre A-Z</option>
+              <option value="name-desc">Nombre Z-A</option>
+            </select>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="showActiveOnly"
+                checked
+              />
+              <label class="form-check-label" for="showActiveOnly">
+                Solo activos
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              id="searchUsers"
+              placeholder="Buscar usuarios..."
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="clearSearch"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="table-container">
+        <div class="table-responsive">
+          <table class="table table-hover" id="usersTable">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Roles</th>
+                <th>Contacto</th>
+                <th class="text-center">Pedidos</th>
+                <th>Registro</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <!-- Cargado por JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Usuario -->
+    <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="userModalTitle">Editar Usuario</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <form id="userForm" novalidate>
+            <input type="hidden" id="userId" />
+
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Nombre Completo *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="userFullName"
+                    required
+                  />
+                  <div class="invalid-feedback">El nombre es requerido</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Email *</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="userEmail"
+                    required
+                    readonly
+                  />
+                  <div class="invalid-feedback">El email es requerido</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Teléfono</label>
+                  <input type="tel" class="form-control" id="userPhone" />
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">Dirección</label>
+                  <textarea
+                    class="form-control"
+                    id="userAddress"
+                    rows="2"
+                  ></textarea>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">DNI</label>
+                  <input type="text" class="form-control" id="userDni" />
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Fecha de Registro</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="userCreatedAt"
+                    readonly
+                  />
+                </div>
+
+                <div class="col-12" id="rolesSection">
+                  <label class="form-label">Roles</label>
+                  <div id="userRoles">
+                    <!-- Cargado por JavaScript -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary" id="saveUserBtn">
+                <i class="fas fa-save me-1"></i> Guardar Cambios
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <!-- Nuestros módulos -->
+    <script type="module">
+      import { supabase } from "../../js/supabaseClient.js";
+      import Auth from "../../js/utils/auth.js";
+
+      let currentUsers = [];
+      let usersTable = null;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const isAdmin = await Auth.isAdmin();
+        if (!isAdmin) {
+          window.location.href = "/catalogo.html";
+          return;
+        }
+
+        await loadUsers();
+        setupEventListeners();
+
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", async () => {
+            await Auth.logout();
+          });
+      });
+
+      async function loadUsers() {
+        try {
+          // Obtener usuarios con roles y estadísticas
+          const { data: users, error } = await supabase
+            .from("profiles")
+            .select(
+              `
+                        *,
+                        user_roles(
+                            role,
+                            is_active
+                        ),
+                        orders(count)
+                    `
+            )
+            .order("created_at", { ascending: false });
+
+          if (error) throw error;
+
+          currentUsers = users || [];
+          updateUsersUI(currentUsers);
+          updateStats(currentUsers);
+        } catch (error) {
+          console.error("Error cargando usuarios:", error);
+          showToast("Error al cargar usuarios", "danger");
+        }
+      }
+
+      function updateUsersUI(users) {
+        const tbody = document.getElementById("usersTableBody");
+
+        if (!users || users.length === 0) {
+          tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-users fa-3x mb-3"></i><br>
+                                No hay usuarios registrados
+                            </div>
+                        </td>
+                    </tr>
+                `;
+          return;
+        }
+
+        tbody.innerHTML = users
+          .map((user) => {
+            const roles = user.user_roles || [];
+            const activeRoles = roles.filter((r) => r.is_active !== false);
+            const orderCount = user.orders?.[0]?.count || 0;
+
+            // Avatar o inicial
+            const avatar = user.avatar_url
+              ? `<img src="${user.avatar_url}" class="user-avatar me-2" alt="${user.full_name}">`
+              : `<div class="avatar-placeholder me-2 bg-primary">
+                        ${
+                          user.full_name
+                            ? user.full_name.charAt(0).toUpperCase()
+                            : "U"
+                        }
+                    </div>`;
+
+            return `
+                    <tr data-user-id="${user.id}">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                ${avatar}
+                                <div>
+                                    <strong class="d-block">${
+                                      user.full_name || "Sin nombre"
+                                    }</strong>
+                                    <small class="text-muted">${
+                                      user.email
+                                    }</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            ${activeRoles
+                              .map(
+                                (role) => `
+                                <span class="badge-role role-${role.role} me-1">
+                                    ${getRoleLabel(role.role)}
+                                </span>
+                            `
+                              )
+                              .join("")}
+                        </td>
+                        <td>
+                            ${
+                              user.phone
+                                ? `
+                                <div><i class="fas fa-phone text-muted me-1"></i> ${user.phone}</div>
+                            `
+                                : ""
+                            }
+                            ${
+                              user.address
+                                ? `
+                                <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> ${user.address.substring(
+                                  0,
+                                  30
+                                )}...</small>
+                            `
+                                : ""
+                            }
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-secondary">${orderCount}</span>
+                        </td>
+                        <td>
+                            ${new Date(
+                              user.created_at
+                            ).toLocaleDateString()}<br>
+                            <small class="text-muted">${new Date(
+                              user.created_at
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}</small>
+                        </td>
+                        <td class="text-center user-actions">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="editUser('${
+                                  user.id
+                                }')" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="manageRoles('${
+                                  user.id
+                                }')" title="Gestionar roles">
+                                    <i class="fas fa-user-tag"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+          })
+          .join("");
+
+        // Inicializar/Actualizar DataTables
+        if (usersTable) {
+          usersTable.destroy();
+        }
+
+        usersTable = $("#usersTable").DataTable({
+          language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json",
+          },
+          pageLength: 25,
+          responsive: true,
+        });
+      }
+
+      function updateStats(users) {
+        const rolesCount = {
+          superadmin: 0,
+          admin: 0,
+          chef: 0,
+          delivery: 0,
+          cliente: 0,
+        };
+
+        users.forEach((user) => {
+          const activeRoles = (user.user_roles || []).filter(
+            (r) => r.is_active !== false
+          );
+          activeRoles.forEach((role) => {
+            if (rolesCount.hasOwnProperty(role.role)) {
+              rolesCount[role.role]++;
+            }
+          });
+        });
+
+        document.getElementById("totalUsers").textContent = users.length;
+        document.getElementById("adminCount").textContent = rolesCount.admin;
+        document.getElementById("chefCount").textContent = rolesCount.chef;
+        document.getElementById("deliveryCount").textContent =
+          rolesCount.delivery;
+      }
+
+      function getRoleLabel(role) {
+        const labels = {
+          superadmin: "Super Admin",
+          admin: "Admin",
+          chef: "Chef",
+          delivery: "Delivery",
+          cliente: "Cliente",
+        };
+        return labels[role] || role;
+      }
+
+      function setupEventListeners() {
+        // Nuevo usuario
+        document.getElementById("newUserBtn").addEventListener("click", () => {
+          showNewUserModal();
+        });
+
+        // Guardar usuario
+        document
+          .getElementById("userForm")
+          .addEventListener("submit", async (e) => {
+            e.preventDefault();
+            await saveUser();
+          });
+
+        // Búsqueda
+        document
+          .getElementById("searchUsers")
+          .addEventListener("input", (e) => {
+            if (usersTable) {
+              usersTable.search(e.target.value).draw();
+            }
+          });
+
+        // Limpiar búsqueda
+        document.getElementById("clearSearch").addEventListener("click", () => {
+          document.getElementById("searchUsers").value = "";
+          if (usersTable) {
+            usersTable.search("").draw();
+          }
+        });
+
+        // Filtros por rol
+        document.querySelectorAll(".filter-badge").forEach((badge) => {
+          badge.addEventListener("click", (e) => {
+            const role = e.target.dataset.role;
+            applyRoleFilter(role);
+
+            // Resaltar filtro activo
+            document.querySelectorAll(".filter-badge").forEach((b) => {
+              b.classList.remove("bg-dark", "text-white");
+            });
+            e.target.classList.add("bg-dark", "text-white");
+          });
+        });
+
+        // Ordenar
+        document.getElementById("sortBy").addEventListener("change", (e) => {
+          sortUsers(e.target.value);
+        });
+
+        // Solo activos
+        document
+          .getElementById("showActiveOnly")
+          .addEventListener("change", (e) => {
+            filterActiveUsers(e.target.checked);
+          });
+      }
+
+      function applyRoleFilter(role) {
+        if (role === "all") {
+          if (usersTable) {
+            usersTable.column(1).search("").draw();
+          }
+          return;
+        }
+
+        if (usersTable) {
+          usersTable.column(1).search(getRoleLabel(role)).draw();
+        }
+      }
+
+      function sortUsers(sortBy) {
+        if (!usersTable) return;
+
+        switch (sortBy) {
+          case "newest":
+            usersTable.order([4, "desc"]).draw();
+            break;
+          case "oldest":
+            usersTable.order([4, "asc"]).draw();
+            break;
+          case "name-asc":
+            usersTable.order([0, "asc"]).draw();
+            break;
+          case "name-desc":
+            usersTable.order([0, "desc"]).draw();
+            break;
+        }
+      }
+
+      function filterActiveUsers(activeOnly) {
+        // Esta funcionalidad requeriría una columna de estado activo
+        // Por ahora mostramos todos
+        showToast("Filtro de activos disponible próximamente", "info");
+      }
+
+      window.editUser = async function (userId) {
+        try {
+          // Obtener datos del usuario
+          const { data: user } = await supabase
+            .from("profiles")
+            .select(
+              `
+                        *,
+                        user_roles(role, is_active)
+                    `
+            )
+            .eq("id", userId)
+            .single();
+
+          if (!user) {
+            showToast("Usuario no encontrado", "danger");
+            return;
+          }
+
+          // Obtener roles actuales
+          const userRoles = user.user_roles || [];
+
+          // Llenar formulario
+          document.getElementById("userId").value = userId;
+          document.getElementById("userFullName").value = user.full_name || "";
+          document.getElementById("userEmail").value = user.email || "";
+          document.getElementById("userPhone").value = user.phone || "";
+          document.getElementById("userAddress").value = user.address || "";
+          document.getElementById("userDni").value = user.dni || "";
+          document.getElementById("userCreatedAt").value = new Date(
+            user.created_at
+          ).toLocaleString();
+
+          // Mostrar roles actuales
+          const rolesContainer = document.getElementById("userRoles");
+          rolesContainer.innerHTML = userRoles
+            .map(
+              (role) => `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${
+                          role.role
+                        }" 
+                               ${
+                                 role.is_active !== false ? "checked" : ""
+                               } disabled>
+                        <label class="form-check-label">
+                            <span class="badge-role role-${role.role}">
+                                ${getRoleLabel(role.role)}
+                            </span>
+                        </label>
+                    </div>
+                `
+            )
+            .join("");
+
+          const modal = new bootstrap.Modal(
+            document.getElementById("userModal")
+          );
+          modal.show();
+        } catch (error) {
+          console.error("Error cargando usuario:", error);
+          showToast("Error al cargar usuario", "danger");
+        }
+      };
+
+      window.manageRoles = async function (userId) {
+        // Verificar permisos (solo superadmin o admin pueden gestionar roles)
+        const isSuperAdmin = await Auth.hasRole("superadmin");
+        const isAdmin = await Auth.hasRole("admin");
+
+        if (!isSuperAdmin && !isAdmin) {
+          showToast("No tienes permisos para gestionar roles", "danger");
+          return;
+        }
+
+        // Obtener roles actuales del usuario
+        const { data: currentRoles } = await supabase
+          .from("user_roles")
+          .select("role, is_active")
+          .eq("user_id", userId)
+          .eq("is_active", true);
+
+        // Roles disponibles (solo superadmin puede asignar superadmin)
+        const availableRoles = [
+          { value: "cliente", label: "Cliente" },
+          { value: "admin", label: "Administrador" },
+          { value: "chef", label: "Chef/Cocina" },
+          { value: "delivery", label: "Repartidor" },
+        ];
+
+        if (isSuperAdmin) {
+          availableRoles.push({
+            value: "superadmin",
+            label: "Super Administrador",
+          });
+        }
+
+        const currentRoleValues = currentRoles?.map((r) => r.role) || [];
+
+        // Crear interfaz para seleccionar roles
+        const rolesHTML = availableRoles
+          .map(
+            (role) => `
+                <div class="form-check mb-2">
+                    <input class="form-check-input role-checkbox" type="checkbox" 
+                           value="${role.value}" id="role-${role.value}"
+                           ${
+                             currentRoleValues.includes(role.value)
+                               ? "checked"
+                               : ""
+                           }>
+                    <label class="form-check-label" for="role-${role.value}">
+                        <span class="badge-role role-${role.value}">
+                            ${role.label}
+                        </span>
+                    </label>
+                </div>
+            `
+          )
+          .join("");
+
+        const modalHTML = `
+                <div class="modal fade" id="rolesModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Gestionar Roles de Usuario</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-muted">Selecciona los roles para este usuario:</p>
+                                <div id="rolesCheckboxes">
+                                    ${rolesHTML}
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <i class="fas fa-info-circle"></i>
+                                    Un usuario puede tener múltiples roles simultáneamente.
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="saveRolesBtn">
+                                    <i class="fas fa-save me-1"></i> Guardar Roles
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        // Agregar modal al DOM
+        document.body.insertAdjacentHTML("beforeend", modalHTML);
+        const modal = new bootstrap.Modal(
+          document.getElementById("rolesModal")
+        );
+
+        // Configurar evento de guardar
+        document
+          .getElementById("saveRolesBtn")
+          .addEventListener("click", async () => {
+            const checkboxes = document.querySelectorAll(
+              "#rolesCheckboxes .role-checkbox:checked"
+            );
+            const selectedRoles = Array.from(checkboxes).map((cb) => cb.value);
+
+            await updateUserRoles(userId, selectedRoles);
+            modal.hide();
+          });
+
+        // Limpiar modal al cerrar
+        document
+          .getElementById("rolesModal")
+          .addEventListener("hidden.bs.modal", function () {
+            this.remove();
+          });
+
+        modal.show();
+      };
+
+      async function updateUserRoles(userId, selectedRoles) {
+        try {
+          // Eliminar roles actuales
+          const { error: deleteError } = await supabase
+            .from("user_roles")
+            .delete()
+            .eq("user_id", userId);
+
+          if (deleteError) throw deleteError;
+
+          // Insertar nuevos roles si hay seleccionados
+          if (selectedRoles.length > 0) {
+            const currentUser = await Auth.getCurrentUser();
+
+            const rolesData = selectedRoles.map((role) => ({
+              user_id: userId,
+              role: role,
+              is_active: true,
+              assigned_by: currentUser?.id,
+              assigned_at: new Date().toISOString(),
+            }));
+
+            const { error: insertError } = await supabase
+              .from("user_roles")
+              .insert(rolesData);
+
+            if (insertError) throw insertError;
+          }
+
+          showToast("Roles actualizados correctamente", "success");
+          await loadUsers();
+        } catch (error) {
+          console.error("Error actualizando roles:", error);
+          showToast("Error al actualizar roles", "danger");
+        }
+      }
+
+      async function saveUser() {
+        const form = document.getElementById("userForm");
+        if (!form.checkValidity()) {
+          form.classList.add("was-validated");
+          return;
+        }
+
+        const userData = {
+          full_name: document.getElementById("userFullName").value.trim(),
+          phone: document.getElementById("userPhone").value.trim(),
+          address: document.getElementById("userAddress").value.trim(),
+          dni: document.getElementById("userDni").value.trim(),
+          updated_at: new Date().toISOString(),
+        };
+
+        const userId = document.getElementById("userId").value;
+
+        try {
+          const { error } = await supabase
+            .from("profiles")
+            .update(userData)
+            .eq("id", userId);
+
+          if (error) throw error;
+
+          showToast("Usuario actualizado correctamente", "success");
+          bootstrap.Modal.getInstance(
+            document.getElementById("userModal")
+          ).hide();
+          await loadUsers();
+        } catch (error) {
+          showToast("Error al guardar usuario: " + error.message, "danger");
+        }
+      }
+
+      async function showNewUserModal() {
+        const modalHTML = `
+                <div class="modal fade" id="newUserModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Nuevo Usuario</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form id="newUserForm" novalidate>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="newUserEmail" required>
+                                        <div class="invalid-feedback">El email es requerido</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Contraseña *</label>
+                                        <input type="password" class="form-control" id="newUserPassword" required>
+                                        <div class="invalid-feedback">La contraseña es requerida</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre Completo</label>
+                                        <input type="text" class="form-control" id="newUserName">
+                                    </div>
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i>
+                                        El usuario recibirá un email para confirmar su cuenta.
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-user-plus me-1"></i> Crear Usuario
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        document.body.insertAdjacentHTML("beforeend", modalHTML);
+        const modal = new bootstrap.Modal(
+          document.getElementById("newUserModal")
+        );
+
+        document
+          .getElementById("newUserForm")
+          .addEventListener("submit", async (e) => {
+            e.preventDefault();
+            await createNewUser();
+          });
+
+        document
+          .getElementById("newUserModal")
+          .addEventListener("hidden.bs.modal", function () {
+            this.remove();
+          });
+
+        modal.show();
+      }
+
+      async function createNewUser() {
+        const form = document.getElementById("newUserForm");
+        if (!form.checkValidity()) {
+          form.classList.add("was-validated");
+          return;
+        }
+
+        const email = document.getElementById("newUserEmail").value.trim();
+        const password = document.getElementById("newUserPassword").value;
+        const fullName = document.getElementById("newUserName").value.trim();
+
+        try {
+          // Crear usuario en Auth
+          const { data: authData, error: authError } =
+            await supabase.auth.signUp({
+              email,
+              password,
+              options: {
+                data: {
+                  full_name: fullName,
+                },
+              },
+            });
+
+          if (authError) throw authError;
+
+          if (authData.user) {
+            // Crear perfil
+            const { error: profileError } = await supabase
+              .from("profiles")
+              .insert({
+                id: authData.user.id,
+                email: email,
+                full_name: fullName,
+              });
+
+            if (profileError) throw profileError;
+
+            // Asignar rol de cliente por defecto
+            const { error: roleError } = await supabase
+              .from("user_roles")
+              .insert({
+                user_id: authData.user.id,
+                role: "cliente",
+              });
+
+            if (roleError) throw roleError;
+          }
+
+          showToast("Usuario creado correctamente", "success");
+          bootstrap.Modal.getInstance(
+            document.getElementById("newUserModal")
+          ).hide();
+          await loadUsers();
+        } catch (error) {
+          showToast("Error al crear usuario: " + error.message, "danger");
+        }
+      }
+
+      function showToast(message, type = "success") {
+        let container = document.getElementById("toastContainer");
+        if (!container) {
+          container = document.createElement("div");
+          container.id = "toastContainer";
+          container.className =
+            "toast-container position-fixed top-0 end-0 p-3";
+          document.body.appendChild(container);
+        }
+
+        const toastId = "toast-" + Date.now();
+        const toast = document.createElement("div");
+        toast.id = toastId;
+        toast.className = `toast align-items-center text-bg-${type} border-0`;
+        toast.setAttribute("role", "alert");
+        toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-${
+                          type === "success"
+                            ? "check-circle"
+                            : "exclamation-circle"
+                        } me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+
+        container.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        toast.addEventListener("hidden.bs.toast", () => {
+          toast.remove();
+        });
+      }
+    </script>
+  </body>
+</html>

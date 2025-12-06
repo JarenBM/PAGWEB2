@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reportes - Chifa Bonsai</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      :root {
+        --primary-red: #c62828;
+        --primary-red-dark: #b71c1c;
+        --accent-gold: #ffb74d;
+        --dark-bg: #121212;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+      }
+
+      .sidebar {
+        min-height: 100vh;
+        background: linear-gradient(180deg, var(--dark-bg) 0%, #2c1810 100%);
+        color: white;
+        padding: 0;
+        position: fixed;
+        width: 250px;
+        z-index: 1000;
+      }
+
+      .sidebar-header {
+        padding: 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-header h4 {
+        margin: 0;
+        color: var(--accent-gold);
+        font-weight: 600;
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 1rem 1.5rem;
+        border-left: 4px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: white;
+        background: rgba(198, 40, 40, 0.2);
+        border-left-color: var(--primary-red);
+      }
+
+      .nav-link i {
+        width: 20px;
+        margin-right: 10px;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .page-header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .report-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        height: 100%;
+      }
+
+      .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+      }
+
+      .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .stats-change {
+        font-size: 0.9rem;
+      }
+
+      .stats-change.positive {
+        color: #28a745;
+      }
+
+      .stats-change.negative {
+        color: #dc3545;
+      }
+
+      .date-range-picker {
+        max-width: 300px;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .nav-link span {
+          display: none;
+        }
+
+        .sidebar .nav-link i {
+          margin-right: 0;
+          width: 100%;
+          text-align: center;
+        }
+
+        .sidebar-header h4,
+        .sidebar-header small {
+          display: none;
+        }
+
+        .main-content {
+          margin-left: 70px;
+        }
+
+        .chart-container {
+          height: 250px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h4><i class="fas fa-utensils me-2"></i>Chifa Bonsai</h4>
+        <small>Panel de Administración</small>
+      </div>
+
+      <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="dashboard.html">
+          <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="productos.html">
+          <i class="fas fa-utensils"></i> <span>Productos</span>
+        </a>
+        <a class="nav-link" href="pedidos.html">
+          <i class="fas fa-shopping-cart"></i> <span>Pedidos</span>
+        </a>
+        <a class="nav-link" href="usuarios.html">
+          <i class="fas fa-users"></i> <span>Usuarios</span>
+        </a>
+        <a class="nav-link active" href="reportes.html">
+          <i class="fas fa-chart-bar"></i> <span>Reportes</span>
+        </a>
+        <a class="nav-link" href="configuracion.html">
+          <i class="fas fa-cog"></i> <span>Configuración</span>
+        </a>
+
+        <div class="mt-auto p-3">
+          <button class="btn btn-outline-danger btn-sm w-100" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="mb-1">
+              <i class="fas fa-chart-bar me-2"></i>Reportes y Estadísticas
+            </h3>
+            <p class="text-muted mb-0">
+              Análisis detallado del rendimiento del restaurante
+            </p>
+          </div>
+          <div class="d-flex gap-2">
+            <div class="date-range-picker">
+              <div class="input-group">
+                <span class="input-group-text"
+                  ><i class="fas fa-calendar"></i
+                ></span>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="dateFrom"
+                  value="${getDateDaysAgo(7)}"
+                />
+                <span class="input-group-text">a</span>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="dateTo"
+                  value="${getTodayDate()}"
+                />
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  id="applyDateRange"
+                >
+                  <i class="fas fa-filter"></i>
+                </button>
+              </div>
+            </div>
+            <button class="btn btn-success" id="exportReportBtn">
+              <i class="fas fa-file-export me-1"></i> Exportar
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mt-4">
+          <div class="col-md-3 col-6">
+            <div class="report-card">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="text-muted mb-2">Ingresos Totales</h6>
+                  <div class="stats-number text-primary" id="totalRevenue">
+                    S/. 0.00
+                  </div>
+                  <div class="stats-change positive" id="revenueChange">
+                    <i class="fas fa-arrow-up"></i> 0%
+                  </div>
+                </div>
+                <div class="bg-primary text-white rounded p-3">
+                  <i class="fas fa-money-bill-wave fa-2x"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <div class="report-card">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="text-muted mb-2">Total Pedidos</h6>
+                  <div class="stats-number text-success" id="totalOrders">
+                    0
+                  </div>
+                  <div class="stats-change positive" id="ordersChange">
+                    <i class="fas fa-arrow-up"></i> 0%
+                  </div>
+                </div>
+                <div class="bg-success text-white rounded p-3">
+                  <i class="fas fa-shopping-cart fa-2x"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <div class="report-card">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="text-muted mb-2">Ticket Promedio</h6>
+                  <div class="stats-number text-warning" id="avgTicket">
+                    S/. 0.00
+                  </div>
+                  <div class="stats-change positive" id="ticketChange">
+                    <i class="fas fa-arrow-up"></i> 0%
+                  </div>
+                </div>
+                <div class="bg-warning text-white rounded p-3">
+                  <i class="fas fa-receipt fa-2x"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <div class="report-card">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="text-muted mb-2">Clientes Nuevos</h6>
+                  <div class="stats-number text-info" id="newCustomers">0</div>
+                  <div class="stats-change positive" id="customersChange">
+                    <i class="fas fa-arrow-up"></i> 0%
+                  </div>
+                </div>
+                <div class="bg-info text-white rounded p-3">
+                  <i class="fas fa-user-plus fa-2x"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="row mb-4">
+        <!-- Ventas por Día -->
+        <div class="col-md-8">
+          <div class="report-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Ventas por Día</h5>
+              <select
+                class="form-select form-select-sm"
+                style="width: auto"
+                id="salesChartType"
+              >
+                <option value="revenue">Ingresos</option>
+                <option value="orders">Pedidos</option>
+              </select>
+            </div>
+            <div class="chart-container">
+              <canvas id="salesChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Métodos de Pago -->
+        <div class="col-md-4">
+          <div class="report-card">
+            <h5 class="mb-3">Métodos de Pago</h5>
+            <div class="chart-container">
+              <canvas id="paymentMethodsChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- More Charts -->
+      <div class="row mb-4">
+        <!-- Productos Más Vendidos -->
+        <div class="col-md-6">
+          <div class="report-card">
+            <h5 class="mb-3">Productos Más Vendidos</h5>
+            <div class="chart-container">
+              <canvas id="topProductsChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Horarios Pico -->
+        <div class="col-md-6">
+          <div class="report-card">
+            <h5 class="mb-3">Horarios Pico</h5>
+            <div class="chart-container">
+              <canvas id="peakHoursChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Reports -->
+      <div class="row">
+        <!-- Reporte Detallado -->
+        <div class="col-12">
+          <div class="report-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Reporte Detallado</h5>
+              <div class="btn-group">
+                <button
+                  class="btn btn-sm btn-outline-primary active"
+                  data-report="summary"
+                >
+                  Resumen
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-primary"
+                  data-report="products"
+                >
+                  Productos
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-primary"
+                  data-report="customers"
+                >
+                  Clientes
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-primary"
+                  data-report="delivery"
+                >
+                  Delivery
+                </button>
+              </div>
+            </div>
+
+            <div id="reportSummary">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Métrica</th>
+                      <th class="text-end">Valor</th>
+                      <th class="text-end">% Cambio</th>
+                      <th class="text-end">Tendencia</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportSummaryBody">
+                    <!-- Cargado por JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div id="reportProducts" class="d-none">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th class="text-center">Cantidad Vendida</th>
+                      <th class="text-end">Ingresos</th>
+                      <th class="text-center">% del Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportProductsBody">
+                    <!-- Cargado por JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div id="reportCustomers" class="d-none">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Cliente</th>
+                      <th class="text-center">Pedidos</th>
+                      <th class="text-end">Total Gastado</th>
+                      <th class="text-center">Ticket Promedio</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportCustomersBody">
+                    <!-- Cargado por JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div id="reportDelivery" class="d-none">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Zona</th>
+                      <th class="text-center">Pedidos</th>
+                      <th class="text-end">Ingresos</th>
+                      <th class="text-center">% Delivery</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportDeliveryBody">
+                    <!-- Cargado por JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jsPDF para exportar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Nuestros módulos -->
+    <script type="module">
+      import { supabase } from "../../js/supabaseClient.js";
+      import Auth from "../../js/utils/auth.js";
+
+      let charts = {};
+      let reportData = {};
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const isAdmin = await Auth.isAdmin();
+        if (!isAdmin) {
+          window.location.href = "/catalogo.html";
+          return;
+        }
+
+        await loadReports();
+        setupEventListeners();
+        setupCharts();
+
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", async () => {
+            await Auth.logout();
+          });
+      });
+
+      function getTodayDate() {
+        const today = new Date();
+        return today.toISOString().split("T")[0];
+      }
+
+      function getDateDaysAgo(days) {
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        return date.toISOString().split("T")[0];
+      }
+
+      async function loadReports() {
+        try {
+          const dateFrom = document.getElementById("dateFrom").value;
+          const dateTo = document.getElementById("dateTo").value;
+
+          // Obtener pedidos del período
+          const { data: orders, error } = await supabase
+            .from("orders")
+            .select(
+              `
+                        *,
+                        order_items(*),
+                        profiles(full_name)
+                    `
+            )
+            .gte("created_at", dateFrom + "T00:00:00")
+            .lte("created_at", dateTo + "T23:59:59")
+            .order("created_at");
+
+          if (error) throw error;
+
+          // Procesar datos para reportes
+          reportData = processReportData(orders || []);
+
+          // Actualizar UI
+          updateStats(reportData);
+          updateCharts(reportData);
+          updateDetailedReports(reportData);
+        } catch (error) {
+          console.error("Error cargando reportes:", error);
+          showToast("Error al cargar reportes", "danger");
+        }
+      }
+
+      function processReportData(orders) {
+        const data = {
+          totalRevenue: 0,
+          totalOrders: orders.length,
+          avgTicket: 0,
+          newCustomers: 0,
+          dailySales: {},
+          paymentMethods: {},
+          topProducts: {},
+          peakHours: {},
+          customers: {},
+          deliveryZones: {},
+        };
+
+        // Procesar cada pedido
+        orders.forEach((order) => {
+          // Ingresos
+          data.totalRevenue += parseFloat(order.total || 0);
+
+          // Métodos de pago
+          const paymentMethod = order.payment_method || "efectivo";
+          data.paymentMethods[paymentMethod] =
+            (data.paymentMethods[paymentMethod] || 0) + 1;
+
+          // Fecha para ventas por día
+          const date = new Date(order.created_at).toLocaleDateString();
+          data.dailySales[date] =
+            (data.dailySales[date] || 0) + parseFloat(order.total || 0);
+
+          // Hora para horarios pico
+          const hour = new Date(order.created_at).getHours();
+          data.peakHours[hour] = (data.peakHours[hour] || 0) + 1;
+
+          // Productos vendidos
+          order.order_items?.forEach((item) => {
+            const productName = item.product_name;
+            if (!data.topProducts[productName]) {
+              data.topProducts[productName] = {
+                quantity: 0,
+                revenue: 0,
+              };
+            }
+            data.topProducts[productName].quantity += item.quantity;
+            data.topProducts[productName].revenue += item.subtotal;
+          });
+
+          // Clientes
+          const customerName = order.customer_name;
+          if (!data.customers[customerName]) {
+            data.customers[customerName] = {
+              orders: 0,
+              totalSpent: 0,
+            };
+          }
+          data.customers[customerName].orders += 1;
+          data.customers[customerName].totalSpent += parseFloat(
+            order.total || 0
+          );
+
+          // Zonas de delivery (si aplica)
+          if (order.order_type === "delivery" && order.delivery_address) {
+            // Extraer zona aproximada (esto es un ejemplo simple)
+            const address = order.delivery_address.toLowerCase();
+            let zone = "Otra";
+
+            if (address.includes("miraflores")) zone = "Miraflores";
+            else if (address.includes("san isidro")) zone = "San Isidro";
+            else if (address.includes("surco")) zone = "Surco";
+            else if (address.includes("barranco")) zone = "Barranco";
+            else if (address.includes("lima")) zone = "Lima Centro";
+
+            data.deliveryZones[zone] = (data.deliveryZones[zone] || 0) + 1;
+          }
+        });
+
+        // Calcular ticket promedio
+        data.avgTicket =
+          data.totalOrders > 0 ? data.totalRevenue / data.totalOrders : 0;
+
+        // Obtener nuevos clientes (simplificado)
+        // En un sistema real, compararías con el período anterior
+        data.newCustomers = Object.keys(data.customers).length;
+
+        return data;
+      }
+
+      function updateStats(data) {
+        document.getElementById(
+          "totalRevenue"
+        ).textContent = `S/. ${data.totalRevenue.toFixed(2)}`;
+        document.getElementById("totalOrders").textContent = data.totalOrders;
+        document.getElementById(
+          "avgTicket"
+        ).textContent = `S/. ${data.avgTicket.toFixed(2)}`;
+        document.getElementById("newCustomers").textContent = data.newCustomers;
+
+        // Cambios porcentuales (simulados por ahora)
+        document.getElementById(
+          "revenueChange"
+        ).innerHTML = `<i class="fas fa-arrow-up"></i> 12.5%`;
+        document.getElementById(
+          "ordersChange"
+        ).innerHTML = `<i class="fas fa-arrow-up"></i> 8.2%`;
+        document.getElementById(
+          "ticketChange"
+        ).innerHTML = `<i class="fas fa-arrow-up"></i> 4.1%`;
+        document.getElementById(
+          "customersChange"
+        ).innerHTML = `<i class="fas fa-arrow-up"></i> 5.7%`;
+      }
+
+      function setupCharts() {
+        // Chart.js global config
+        Chart.defaults.font.family = "'Poppins', sans-serif";
+        Chart.defaults.color = "#6c757d";
+
+        // Ventas por día
+        const salesCtx = document.getElementById("salesChart").getContext("2d");
+        charts.sales = new Chart(salesCtx, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Ingresos (S/.)",
+                data: [],
+                borderColor: "#0d6efd",
+                backgroundColor: "rgba(13, 110, 253, 0.1)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return `S/. ${context.parsed.y.toFixed(2)}`;
+                  },
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (value) {
+                    return "S/. " + value;
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Métodos de pago
+        const paymentCtx = document
+          .getElementById("paymentMethodsChart")
+          .getContext("2d");
+        charts.payment = new Chart(paymentCtx, {
+          type: "doughnut",
+          data: {
+            labels: ["Efectivo", "Tarjeta", "Yape", "Plin"],
+            datasets: [
+              {
+                data: [40, 30, 20, 10],
+                backgroundColor: ["#28a745", "#0d6efd", "#ffc107", "#dc3545"],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
+
+        // Productos más vendidos
+        const productsCtx = document
+          .getElementById("topProductsChart")
+          .getContext("2d");
+        charts.products = new Chart(productsCtx, {
+          type: "bar",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Cantidad Vendida",
+                data: [],
+                backgroundColor: "#20c997",
+                borderColor: "#198754",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: "y",
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        // Horarios pico
+        const hoursCtx = document
+          .getElementById("peakHoursChart")
+          .getContext("2d");
+        charts.hours = new Chart(hoursCtx, {
+          type: "bar",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: "Pedidos",
+                data: [],
+                backgroundColor: "#ff6b6b",
+                borderColor: "#c62828",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1,
+                },
+              },
+            },
+          },
+        });
+      }
+
+      function updateCharts(data) {
+        // Ventas por día
+        const dates = Object.keys(data.dailySales).sort();
+        const sales = dates.map((date) => data.dailySales[date]);
+
+        charts.sales.data.labels = dates;
+        charts.sales.data.datasets[0].data = sales;
+        charts.sales.update();
+
+        // Métodos de pago (usar datos reales cuando estén disponibles)
+        // Por ahora mantenemos datos de ejemplo
+
+        // Productos más vendidos (top 10)
+        const topProducts = Object.entries(data.topProducts)
+          .sort((a, b) => b[1].quantity - a[1].quantity)
+          .slice(0, 10);
+
+        charts.products.data.labels = topProducts.map((p) => p[0]);
+        charts.products.data.datasets[0].data = topProducts.map(
+          (p) => p[1].quantity
+        );
+        charts.products.update();
+
+        // Horarios pico
+        const hours = Array.from({ length: 24 }, (_, i) => i);
+        const hourCounts = hours.map((hour) => data.peakHours[hour] || 0);
+
+        charts.hours.data.labels = hours.map((h) => `${h}:00`);
+        charts.hours.data.datasets[0].data = hourCounts;
+        charts.hours.update();
+      }
+
+      function updateDetailedReports(data) {
+        // Resumen
+        const summaryBody = document.getElementById("reportSummaryBody");
+        summaryBody.innerHTML = `
+                <tr>
+                    <td>Ingresos Totales</td>
+                    <td class="text-end">S/. ${data.totalRevenue.toFixed(
+                      2
+                    )}</td>
+                    <td class="text-end text-success">+12.5%</td>
+                    <td class="text-end"><i class="fas fa-arrow-up text-success"></i></td>
+                </tr>
+                <tr>
+                    <td>Total de Pedidos</td>
+                    <td class="text-end">${data.totalOrders}</td>
+                    <td class="text-end text-success">+8.2%</td>
+                    <td class="text-end"><i class="fas fa-arrow-up text-success"></i></td>
+                </tr>
+                <tr>
+                    <td>Ticket Promedio</td>
+                    <td class="text-end">S/. ${data.avgTicket.toFixed(2)}</td>
+                    <td class="text-end text-success">+4.1%</td>
+                    <td class="text-end"><i class="fas fa-arrow-up text-success"></i></td>
+                </tr>
+                <tr>
+                    <td>Clientes Activos</td>
+                    <td class="text-end">${data.newCustomers}</td>
+                    <td class="text-end text-success">+5.7%</td>
+                    <td class="text-end"><i class="fas fa-arrow-up text-success"></i></td>
+                </tr>
+                <tr>
+                    <td>Pedidos por Hora</td>
+                    <td class="text-end">${(data.totalOrders / 24).toFixed(
+                      1
+                    )}</td>
+                    <td class="text-end text-success">+3.2%</td>
+                    <td class="text-end"><i class="fas fa-arrow-up text-success"></i></td>
+                </tr>
+            `;
+
+        // Productos
+        const topProductsList = Object.entries(data.topProducts)
+          .sort((a, b) => b[1].revenue - a[1].revenue)
+          .slice(0, 10);
+
+        const productsBody = document.getElementById("reportProductsBody");
+        productsBody.innerHTML = topProductsList
+          .map(([name, stats], index) => {
+            const percentage = (
+              (stats.revenue / data.totalRevenue) *
+              100
+            ).toFixed(1);
+            return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-secondary me-2">${
+                                  index + 1
+                                }</span>
+                                ${name}
+                            </div>
+                        </td>
+                        <td class="text-center">${stats.quantity}</td>
+                        <td class="text-end">S/. ${stats.revenue.toFixed(
+                          2
+                        )}</td>
+                        <td class="text-center">${percentage}%</td>
+                    </tr>
+                `;
+          })
+          .join("");
+
+        // Clientes (top 10 por gasto)
+        const topCustomers = Object.entries(data.customers)
+          .sort((a, b) => b[1].totalSpent - a[1].totalSpent)
+          .slice(0, 10);
+
+        const customersBody = document.getElementById("reportCustomersBody");
+        customersBody.innerHTML = topCustomers
+          .map(([name, stats], index) => {
+            const avgTicket = stats.totalSpent / stats.orders;
+            return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary me-2">${
+                                  index + 1
+                                }</span>
+                                ${name}
+                            </div>
+                        </td>
+                        <td class="text-center">${stats.orders}</td>
+                        <td class="text-end">S/. ${stats.totalSpent.toFixed(
+                          2
+                        )}</td>
+                        <td class="text-center">S/. ${avgTicket.toFixed(2)}</td>
+                    </tr>
+                `;
+          })
+          .join("");
+
+        // Delivery
+        const deliveryBody = document.getElementById("reportDeliveryBody");
+        const totalDeliveryOrders = Object.values(data.deliveryZones).reduce(
+          (a, b) => a + b,
+          0
+        );
+
+        if (totalDeliveryOrders > 0) {
+          deliveryBody.innerHTML = Object.entries(data.deliveryZones)
+            .sort((a, b) => b[1] - a[1])
+            .map(([zone, count]) => {
+              const percentage = ((count / totalDeliveryOrders) * 100).toFixed(
+                1
+              );
+              return `
+                            <tr>
+                                <td>${zone}</td>
+                                <td class="text-center">${count}</td>
+                                <td class="text-end">S/. ${(
+                                  count * data.avgTicket
+                                ).toFixed(2)}</td>
+                                <td class="text-center">${percentage}%</td>
+                            </tr>
+                        `;
+            })
+            .join("");
+        } else {
+          deliveryBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-3">
+                            No hay datos de delivery en este período
+                        </td>
+                    </tr>
+                `;
+        }
+      }
+
+      function setupEventListeners() {
+        // Aplicar rango de fechas
+        document
+          .getElementById("applyDateRange")
+          .addEventListener("click", async () => {
+            await loadReports();
+          });
+
+        // Exportar reporte
+        document
+          .getElementById("exportReportBtn")
+          .addEventListener("click", () => {
+            exportReport();
+          });
+
+        // Cambiar tipo de gráfico de ventas
+        document
+          .getElementById("salesChartType")
+          .addEventListener("change", (e) => {
+            updateSalesChartType(e.target.value);
+          });
+
+        // Cambiar entre reportes detallados
+        document.querySelectorAll("[data-report]").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const reportType = e.target.dataset.report;
+            switchReport(reportType);
+
+            // Actualizar botones activos
+            document.querySelectorAll("[data-report]").forEach((b) => {
+              b.classList.remove("active");
+            });
+            e.target.classList.add("active");
+          });
+        });
+      }
+
+      function updateSalesChartType(type) {
+        // Esta función cambiaría el gráfico entre ingresos y cantidad de pedidos
+        // Por simplicidad, mantenemos ingresos
+        showToast(
+          `Mostrando ${type === "revenue" ? "ingresos" : "pedidos"}`,
+          "info"
+        );
+      }
+
+      function switchReport(type) {
+        // Ocultar todos los reportes
+        document.getElementById("reportSummary").classList.add("d-none");
+        document.getElementById("reportProducts").classList.add("d-none");
+        document.getElementById("reportCustomers").classList.add("d-none");
+        document.getElementById("reportDelivery").classList.add("d-none");
+
+        // Mostrar el seleccionado
+        document
+          .getElementById(
+            `report${type.charAt(0).toUpperCase() + type.slice(1)}`
+          )
+          .classList.remove("d-none");
+      }
+
+      function exportReport() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Título
+        doc.setFontSize(20);
+        doc.text("CHIFA BONSAI - REPORTE", 20, 20);
+        doc.setFontSize(12);
+        doc.text(
+          `Período: ${document.getElementById("dateFrom").value} a ${
+            document.getElementById("dateTo").value
+          }`,
+          20,
+          30
+        );
+        doc.text(`Generado: ${new Date().toLocaleString()}`, 20, 40);
+
+        // Estadísticas principales
+        doc.setFontSize(14);
+        doc.text("ESTADÍSTICAS PRINCIPALES", 20, 55);
+        doc.setFontSize(10);
+
+        const stats = [
+          ["Ingresos Totales", `S/. ${reportData.totalRevenue.toFixed(2)}`],
+          ["Total de Pedidos", reportData.totalOrders],
+          ["Ticket Promedio", `S/. ${reportData.avgTicket.toFixed(2)}`],
+          ["Clientes Activos", reportData.newCustomers],
+        ];
+
+        let y = 65;
+        stats.forEach(([label, value]) => {
+          doc.text(`${label}: ${value}`, 30, y);
+          y += 7;
+        });
+
+        // Productos más vendidos
+        y += 10;
+        doc.setFontSize(14);
+        doc.text("PRODUCTOS MÁS VENDIDOS", 20, y);
+        y += 10;
+        doc.setFontSize(10);
+
+        const topProducts = Object.entries(reportData.topProducts)
+          .sort((a, b) => b[1].quantity - a[1].quantity)
+          .slice(0, 5);
+
+        topProducts.forEach(([name, stats], index) => {
+          doc.text(
+            `${index + 1}. ${name}: ${
+              stats.quantity
+            } unidades (S/. ${stats.revenue.toFixed(2)})`,
+            30,
+            y
+          );
+          y += 6;
+        });
+
+        doc.save(`reporte-chifa-${new Date().toISOString().split("T")[0]}.pdf`);
+        showToast("Reporte exportado a PDF", "success");
+      }
+
+      function showToast(message, type = "success") {
+        let container = document.getElementById("toastContainer");
+        if (!container) {
+          container = document.createElement("div");
+          container.id = "toastContainer";
+          container.className =
+            "toast-container position-fixed top-0 end-0 p-3";
+          document.body.appendChild(container);
+        }
+
+        const toastId = "toast-" + Date.now();
+        const toast = document.createElement("div");
+        toast.id = toastId;
+        toast.className = `toast align-items-center text-bg-${type} border-0`;
+        toast.setAttribute("role", "alert");
+        toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-${
+                          type === "success"
+                            ? "check-circle"
+                            : "exclamation-circle"
+                        } me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+
+        container.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        toast.addEventListener("hidden.bs.toast", () => {
+          toast.remove();
+        });
+      }
+    </script>
+  </body>
+</html>

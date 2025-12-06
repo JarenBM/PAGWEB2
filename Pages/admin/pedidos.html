@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Pedidos - Chifa Bonsai</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <!-- DataTables -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
+    />
+
+    <style>
+      :root {
+        --primary-red: #c62828;
+        --primary-red-dark: #b71c1c;
+        --accent-gold: #ffb74d;
+        --dark-bg: #121212;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+      }
+
+      .sidebar {
+        min-height: 100vh;
+        background: linear-gradient(180deg, var(--dark-bg) 0%, #2c1810 100%);
+        color: white;
+        padding: 0;
+        position: fixed;
+        width: 250px;
+        z-index: 1000;
+      }
+
+      .sidebar-header {
+        padding: 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-header h4 {
+        margin: 0;
+        color: var(--accent-gold);
+        font-weight: 600;
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 1rem 1.5rem;
+        border-left: 4px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: white;
+        background: rgba(198, 40, 40, 0.2);
+        border-left-color: var(--primary-red);
+      }
+
+      .nav-link i {
+        width: 20px;
+        margin-right: 10px;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .page-header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .table-container {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+
+      .status-pendiente {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .status-confirmado {
+        background: #cce5ff;
+        color: #004085;
+      }
+      .status-preparando {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+      .status-listo {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status-en_camino {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .status-entregado {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status-cancelado {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .type-badge {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+      }
+
+      .type-local {
+        background: #e7f5ff;
+        color: #1971c2;
+      }
+      .type-delivery {
+        background: #fff4e6;
+        color: #e8590c;
+      }
+
+      .order-actions {
+        min-width: 150px;
+      }
+
+      .btn-status {
+        padding: 4px 12px;
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .nav-link span {
+          display: none;
+        }
+
+        .sidebar .nav-link i {
+          margin-right: 0;
+          width: 100%;
+          text-align: center;
+        }
+
+        .sidebar-header h4,
+        .sidebar-header small {
+          display: none;
+        }
+
+        .main-content {
+          margin-left: 70px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h4><i class="fas fa-utensils me-2"></i>Chifa Bonsai</h4>
+        <small>Panel de Administración</small>
+      </div>
+
+      <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="dashboard.html">
+          <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="productos.html">
+          <i class="fas fa-utensils"></i> <span>Productos</span>
+        </a>
+        <a class="nav-link active" href="pedidos.html">
+          <i class="fas fa-shopping-cart"></i> <span>Pedidos</span>
+          <span class="badge bg-danger float-end mt-1" id="pendingBadge"
+            >0</span
+          >
+        </a>
+        <a class="nav-link" href="usuarios.html">
+          <i class="fas fa-users"></i> <span>Usuarios</span>
+        </a>
+        <a class="nav-link" href="reportes.html">
+          <i class="fas fa-chart-bar"></i> <span>Reportes</span>
+        </a>
+        <a class="nav-link" href="configuracion.html">
+          <i class="fas fa-cog"></i> <span>Configuración</span>
+        </a>
+
+        <div class="mt-auto p-3">
+          <button class="btn btn-outline-danger btn-sm w-100" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="mb-1">
+              <i class="fas fa-shopping-cart me-2"></i>Gestión de Pedidos
+            </h3>
+            <p class="text-muted mb-0">
+              Administra y sigue el estado de todos los pedidos
+            </p>
+          </div>
+          <div>
+            <button class="btn btn-primary me-2" id="refreshOrders">
+              <i class="fas fa-sync-alt me-1"></i> Actualizar
+            </button>
+            <button class="btn btn-success" id="exportOrders">
+              <i class="fas fa-file-export me-1"></i> Exportar
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mt-4">
+          <div class="col-md-2 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-primary text-white rounded p-2 me-2">
+                    <i class="fas fa-clock"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="totalToday">0</h5>
+                    <small class="text-muted">Hoy</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-warning text-white rounded p-2 me-2">
+                    <i class="fas fa-exclamation-circle"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="pendingCount">0</h5>
+                    <small class="text-muted">Pendientes</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-info text-white rounded p-2 me-2">
+                    <i class="fas fa-utensils"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="preparingCount">0</h5>
+                    <small class="text-muted">Preparando</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-success text-white rounded p-2 me-2">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="deliveredCount">0</h5>
+                    <small class="text-muted">Entregados</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-danger text-white rounded p-2 me-2">
+                    <i class="fas fa-times-circle"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="cancelledCount">0</h5>
+                    <small class="text-muted">Cancelados</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-secondary text-white rounded p-2 me-2">
+                    <i class="fas fa-money-bill-wave"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="todayRevenue">S/. 0</h5>
+                    <small class="text-muted">Ingresos Hoy</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            <span class="badge bg-secondary filter-badge" data-filter="all"
+              >Todos</span
+            >
+            <span class="badge bg-warning filter-badge" data-filter="pendiente"
+              >Pendientes</span
+            >
+            <span class="badge bg-info filter-badge" data-filter="confirmado"
+              >Confirmados</span
+            >
+            <span class="badge bg-primary filter-badge" data-filter="preparando"
+              >Preparando</span
+            >
+            <span class="badge bg-success filter-badge" data-filter="listo"
+              >Listos</span
+            >
+            <span class="badge bg-warning filter-badge" data-filter="en_camino"
+              >En Camino</span
+            >
+            <span class="badge bg-success filter-badge" data-filter="entregado"
+              >Entregados</span
+            >
+            <span class="badge bg-danger filter-badge" data-filter="cancelado"
+              >Cancelados</span
+            >
+          </div>
+
+          <div class="d-flex gap-2">
+            <div class="input-group" style="max-width: 200px">
+              <span class="input-group-text"
+                ><i class="fas fa-calendar"></i
+              ></span>
+              <input type="date" class="form-control" id="dateFilter" />
+            </div>
+
+            <select
+              class="form-select"
+              style="max-width: 150px"
+              id="typeFilter"
+            >
+              <option value="all">Todos los tipos</option>
+              <option value="local">Local</option>
+              <option value="delivery">Delivery</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              id="searchOrders"
+              placeholder="Buscar pedidos..."
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="clearSearch"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="table-container">
+        <div class="table-responsive">
+          <table class="table table-hover" id="ordersTable">
+            <thead>
+              <tr>
+                <th>Pedido</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Tipo</th>
+                <th class="text-end">Total</th>
+                <th>Fecha/Hora</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <!-- Cargado por JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Detalles Pedido -->
+    <div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="orderModalTitle">
+              Detalles del Pedido
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body" id="orderModalBody">
+            <!-- Cargado por JavaScript -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+            <button type="button" class="btn btn-primary" id="printOrderBtn">
+              <i class="fas fa-print me-1"></i> Imprimir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Nuestros módulos -->
+    <script type="module">
+      import { supabase } from "../../js/supabaseClient.js";
+      import Auth from "../../js/utils/auth.js";
+
+      let currentOrders = [];
+      let ordersTable = null;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const isAdmin = await Auth.isAdmin();
+        if (!isAdmin) {
+          window.location.href = "/catalogo.html";
+          return;
+        }
+
+        await loadOrders();
+        setupEventListeners();
+
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", async () => {
+            await Auth.logout();
+          });
+      });
+
+      async function loadOrders() {
+        try {
+          const { data: orders, error } = await supabase
+            .from("orders")
+            .select(
+              `
+                        *,
+                        order_items(*),
+                        profiles(full_name, phone)
+                    `
+            )
+            .order("created_at", { ascending: false });
+
+          if (error) throw error;
+
+          currentOrders = orders || [];
+          updateOrdersUI(currentOrders);
+          updateStats(currentOrders);
+        } catch (error) {
+          console.error("Error cargando pedidos:", error);
+          showToast("Error al cargar pedidos", "danger");
+        }
+      }
+
+      function updateOrdersUI(orders) {
+        const tbody = document.getElementById("ordersTableBody");
+
+        if (!orders || orders.length === 0) {
+          tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-shopping-cart fa-3x mb-3"></i><br>
+                                No hay pedidos registrados
+                            </div>
+                        </td>
+                    </tr>
+                `;
+          return;
+        }
+
+        tbody.innerHTML = orders
+          .map((order) => {
+            const itemsCount = order.order_items?.length || 0;
+            const totalItems =
+              order.order_items?.reduce(
+                (sum, item) => sum + item.quantity,
+                0
+              ) || 0;
+
+            return `
+                    <tr data-order-id="${order.id}">
+                        <td>
+                            <strong class="d-block">#${
+                              order.order_number
+                            }</strong>
+                            <small class="text-muted">${itemsCount} productos</small>
+                        </td>
+                        <td>
+                            <strong class="d-block">${
+                              order.customer_name
+                            }</strong>
+                            <small class="text-muted">${
+                              order.customer_phone
+                            }</small>
+                        </td>
+                        <td>
+                            <span class="status-badge status-${
+                              order.order_status
+                            }">
+                                ${getStatusText(order.order_status)}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="type-badge type-${
+                              order.order_type || "delivery"
+                            }">
+                                ${
+                                  order.order_type === "local"
+                                    ? "🏠 Local"
+                                    : "🚚 Delivery"
+                                }
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <strong>S/. ${parseFloat(order.total).toFixed(
+                              2
+                            )}</strong><br>
+                            <small class="text-muted">${totalItems} items</small>
+                        </td>
+                        <td>
+                            ${new Date(
+                              order.created_at
+                            ).toLocaleDateString()}<br>
+                            <small>${new Date(
+                              order.created_at
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}</small>
+                        </td>
+                        <td class="text-center order-actions">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="viewOrderDetails('${
+                                  order.id
+                                }')" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success" onclick="updateOrderStatus('${
+                                  order.id
+                                }')" title="Cambiar estado">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                ${
+                                  order.order_type === "delivery"
+                                    ? `
+                                    <button class="btn btn-outline-warning" onclick="assignDelivery('${order.id}')" title="Asignar delivery">
+                                        <i class="fas fa-motorcycle"></i>
+                                    </button>
+                                `
+                                    : ""
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                `;
+          })
+          .join("");
+
+        // Inicializar/Actualizar DataTables
+        if (ordersTable) {
+          ordersTable.destroy();
+        }
+
+        ordersTable = $("#ordersTable").DataTable({
+          language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json",
+          },
+          pageLength: 25,
+          responsive: true,
+          order: [[5, "desc"]],
+        });
+      }
+
+      function updateStats(orders) {
+        const today = new Date().toISOString().split("T")[0];
+        const todayOrders = orders.filter((o) =>
+          o.created_at.startsWith(today)
+        );
+
+        const stats = {
+          totalToday: todayOrders.length,
+          pendingCount: orders.filter((o) => o.order_status === "pendiente")
+            .length,
+          preparingCount: orders.filter((o) => o.order_status === "preparando")
+            .length,
+          deliveredCount: orders.filter((o) => o.order_status === "entregado")
+            .length,
+          cancelledCount: orders.filter((o) => o.order_status === "cancelado")
+            .length,
+          todayRevenue: todayOrders
+            .filter((o) => o.order_status !== "cancelado")
+            .reduce((sum, o) => sum + parseFloat(o.total || 0), 0),
+        };
+
+        document.getElementById("totalToday").textContent = stats.totalToday;
+        document.getElementById("pendingCount").textContent =
+          stats.pendingCount;
+        document.getElementById("preparingCount").textContent =
+          stats.preparingCount;
+        document.getElementById("deliveredCount").textContent =
+          stats.deliveredCount;
+        document.getElementById("cancelledCount").textContent =
+          stats.cancelledCount;
+        document.getElementById(
+          "todayRevenue"
+        ).textContent = `S/. ${stats.todayRevenue.toFixed(2)}`;
+        document.getElementById("pendingBadge").textContent =
+          stats.pendingCount;
+      }
+
+      function setupEventListeners() {
+        // Actualizar pedidos
+        document
+          .getElementById("refreshOrders")
+          .addEventListener("click", async () => {
+            await loadOrders();
+            showToast("Pedidos actualizados", "success");
+          });
+
+        // Exportar pedidos
+        document
+          .getElementById("exportOrders")
+          .addEventListener("click", () => {
+            exportOrdersToCSV();
+          });
+
+        // Búsqueda
+        document
+          .getElementById("searchOrders")
+          .addEventListener("input", (e) => {
+            if (ordersTable) {
+              ordersTable.search(e.target.value).draw();
+            }
+          });
+
+        // Limpiar búsqueda
+        document.getElementById("clearSearch").addEventListener("click", () => {
+          document.getElementById("searchOrders").value = "";
+          if (ordersTable) {
+            ordersTable.search("").draw();
+          }
+        });
+
+        // Filtros por estado
+        document.querySelectorAll(".filter-badge").forEach((badge) => {
+          badge.addEventListener("click", (e) => {
+            const filter = e.target.dataset.filter;
+            applyStatusFilter(filter);
+
+            // Resaltar filtro activo
+            document.querySelectorAll(".filter-badge").forEach((b) => {
+              b.classList.remove("bg-dark", "text-white");
+            });
+            e.target.classList.add("bg-dark", "text-white");
+          });
+        });
+
+        // Filtro por fecha
+        document
+          .getElementById("dateFilter")
+          .addEventListener("change", (e) => {
+            filterByDate(e.target.value);
+          });
+
+        // Filtro por tipo
+        document
+          .getElementById("typeFilter")
+          .addEventListener("change", (e) => {
+            filterByType(e.target.value);
+          });
+
+        // Imprimir orden
+        document
+          .getElementById("printOrderBtn")
+          .addEventListener("click", () => {
+            printOrder();
+          });
+
+        // Suscribirse a cambios en tiempo real
+        supabase
+          .channel("orders-channel")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "orders" },
+            async () => {
+              await loadOrders();
+            }
+          )
+          .subscribe();
+      }
+
+      function getStatusText(status) {
+        const texts = {
+          pendiente: "Pendiente",
+          confirmado: "Confirmado",
+          preparando: "Preparando",
+          listo: "Listo",
+          en_camino: "En Camino",
+          entregado: "Entregado",
+          cancelado: "Cancelado",
+        };
+        return texts[status] || status;
+      }
+
+      function applyStatusFilter(status) {
+        if (status === "all") {
+          if (ordersTable) {
+            ordersTable.column(2).search("").draw();
+          }
+          return;
+        }
+
+        if (ordersTable) {
+          ordersTable.column(2).search(getStatusText(status)).draw();
+        }
+      }
+
+      function filterByDate(date) {
+        if (!date) {
+          if (ordersTable) {
+            ordersTable.draw();
+          }
+          return;
+        }
+
+        // Filtrar manualmente porque DataTables no filtra bien fechas
+        const filtered = currentOrders.filter((order) =>
+          order.created_at.startsWith(date)
+        );
+        updateOrdersUI(filtered);
+      }
+
+      function filterByType(type) {
+        if (type === "all") {
+          if (ordersTable) {
+            ordersTable.column(3).search("").draw();
+          }
+          return;
+        }
+
+        const typeText = type === "local" ? "Local" : "Delivery";
+        if (ordersTable) {
+          ordersTable.column(3).search(typeText).draw();
+        }
+      }
+
+      // Funciones globales para los botones
+      window.viewOrderDetails = async function (orderId) {
+        try {
+          const { data: order } = await supabase
+            .from("orders")
+            .select(
+              `
+                        *,
+                        order_items(*),
+                        profiles(full_name, phone, address)
+                    `
+            )
+            .eq("id", orderId)
+            .single();
+
+          if (!order) {
+            showToast("Pedido no encontrado", "danger");
+            return;
+          }
+
+          const modalBody = document.getElementById("orderModalBody");
+          const items = order.order_items || [];
+
+          modalBody.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Información del Cliente</h6>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p class="mb-1"><strong>Nombre:</strong> ${
+                                      order.customer_name
+                                    }</p>
+                                    <p class="mb-1"><strong>Teléfono:</strong> ${
+                                      order.customer_phone
+                                    }</p>
+                                    <p class="mb-1"><strong>Email:</strong> ${
+                                      order.customer_email
+                                    }</p>
+                                    ${
+                                      order.order_type === "delivery"
+                                        ? `
+                                        <p class="mb-0"><strong>Dirección:</strong> ${order.delivery_address}</p>
+                                    `
+                                        : `
+                                        <p class="mb-0"><strong>Tipo:</strong> Recojo en local</p>
+                                        ${
+                                          order.table_number
+                                            ? `<p class="mb-0"><strong>Mesa:</strong> ${order.table_number}</p>`
+                                            : ""
+                                        }
+                                    `
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6>Información del Pedido</h6>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p class="mb-1"><strong>Número:</strong> #${
+                                      order.order_number
+                                    }</p>
+                                    <p class="mb-1"><strong>Fecha:</strong> ${new Date(
+                                      order.created_at
+                                    ).toLocaleString()}</p>
+                                    <p class="mb-1"><strong>Estado:</strong> 
+                                        <span class="status-badge status-${
+                                          order.order_status
+                                        }">
+                                            ${getStatusText(order.order_status)}
+                                        </span>
+                                    </p>
+                                    <p class="mb-1"><strong>Método de pago:</strong> ${
+                                      order.payment_method
+                                    }</p>
+                                    <p class="mb-0"><strong>Estado de pago:</strong> ${
+                                      order.payment_status
+                                    }</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6 class="mt-3">Items del Pedido</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio Unit.</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${items
+                                  .map(
+                                    (item) => `
+                                    <tr>
+                                        <td>${item.product_name}</td>
+                                        <td class="text-center">${
+                                          item.quantity
+                                        }</td>
+                                        <td class="text-end">S/. ${parseFloat(
+                                          item.unit_price
+                                        ).toFixed(2)}</td>
+                                        <td class="text-end">S/. ${parseFloat(
+                                          item.subtotal
+                                        ).toFixed(2)}</td>
+                                    </tr>
+                                `
+                                  )
+                                  .join("")}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                    <td class="text-end">S/. ${parseFloat(
+                                      order.subtotal
+                                    ).toFixed(2)}</td>
+                                </tr>
+                                ${
+                                  order.shipping_cost > 0
+                                    ? `
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Delivery:</strong></td>
+                                        <td class="text-end">S/. ${parseFloat(
+                                          order.shipping_cost
+                                        ).toFixed(2)}</td>
+                                    </tr>
+                                `
+                                    : ""
+                                }
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong>S/. ${parseFloat(
+                                      order.total
+                                    ).toFixed(2)}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    ${
+                      order.notes
+                        ? `
+                        <h6 class="mt-3">Notas del Pedido</h6>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="mb-0">${order.notes}</p>
+                            </div>
+                        </div>
+                    `
+                        : ""
+                    }
+                    
+                    <div class="mt-3" id="statusButtons">
+                        <h6>Cambiar Estado</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            ${[
+                              "pendiente",
+                              "confirmado",
+                              "preparando",
+                              "listo",
+                              "en_camino",
+                              "entregado",
+                              "cancelado",
+                            ]
+                              .map(
+                                (status) => `
+                                    <button class="btn btn-sm ${
+                                      order.order_status === status
+                                        ? "btn-primary"
+                                        : "btn-outline-primary"
+                                    }"
+                                            onclick="changeOrderStatus('${
+                                              order.id
+                                            }', '${status}')">
+                                        ${getStatusText(status)}
+                                    </button>
+                                `
+                              )
+                              .join("")}
+                        </div>
+                    </div>
+                `;
+
+          // Guardar orderId para imprimir
+          modalBody.dataset.orderId = orderId;
+
+          const modal = new bootstrap.Modal(
+            document.getElementById("orderModal")
+          );
+          modal.show();
+        } catch (error) {
+          console.error("Error cargando detalles:", error);
+          showToast("Error al cargar detalles del pedido", "danger");
+        }
+      };
+
+      window.updateOrderStatus = async function (orderId) {
+        const statuses = [
+          { value: "pendiente", label: "Pendiente" },
+          { value: "confirmado", label: "Confirmado" },
+          { value: "preparando", label: "Preparando" },
+          { value: "listo", label: "Listo" },
+          { value: "en_camino", label: "En Camino" },
+          { value: "entregado", label: "Entregado" },
+          { value: "cancelado", label: "Cancelado" },
+        ];
+
+        const { data: order } = await supabase
+          .from("orders")
+          .select("order_status")
+          .eq("id", orderId)
+          .single();
+
+        if (!order) return;
+
+        const statusOptions = statuses
+          .map(
+            (s) =>
+              `<option value="${s.value}" ${
+                s.value === order.order_status ? "selected" : ""
+              }>${s.label}</option>`
+          )
+          .join("");
+
+        const newStatus = prompt(
+          `
+                Seleccione el nuevo estado:\n
+                <select class="form-control mt-2" id="statusSelect">
+                    ${statusOptions}
+                </select>
+            `,
+          order.order_status
+        );
+
+        if (!newStatus || newStatus === order.order_status) return;
+
+        try {
+          const { error } = await supabase
+            .from("orders")
+            .update({
+              order_status: newStatus,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", orderId);
+
+          if (error) throw error;
+
+          showToast("Estado actualizado correctamente", "success");
+          await loadOrders();
+        } catch (error) {
+          showToast("Error al actualizar estado", "danger");
+        }
+      };
+
+      window.changeOrderStatus = async function (orderId, status) {
+        try {
+          const { error } = await supabase
+            .from("orders")
+            .update({
+              order_status: status,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", orderId);
+
+          if (error) throw error;
+
+          showToast("Estado cambiado a: " + getStatusText(status), "success");
+
+          // Recargar detalles
+          viewOrderDetails(orderId);
+          await loadOrders();
+        } catch (error) {
+          showToast("Error al cambiar estado", "danger");
+        }
+      };
+
+      window.assignDelivery = async function (orderId) {
+        // Obtener repartidores
+        const { data: deliveryPersons } = await supabase
+          .from("user_roles")
+          .select(
+            `
+                    user_id,
+                    profiles(full_name, phone)
+                `
+          )
+          .eq("role", "delivery")
+          .eq("is_active", true);
+
+        if (!deliveryPersons || deliveryPersons.length === 0) {
+          showToast("No hay repartidores disponibles", "warning");
+          return;
+        }
+
+        const options = deliveryPersons
+          .map(
+            (d) =>
+              `<option value="${d.user_id}">${d.profiles.full_name} - ${d.profiles.phone}</option>`
+          )
+          .join("");
+
+        const deliveryId = prompt(`
+                Asignar repartidor:\n
+                <select class="form-control mt-2" id="deliverySelect">
+                    <option value="">Seleccionar repartidor</option>
+                    ${options}
+                </select>
+            `);
+
+        if (!deliveryId) return;
+
+        try {
+          const { error } = await supabase
+            .from("orders")
+            .update({
+              assigned_delivery_id: deliveryId,
+              order_status: "en_camino",
+            })
+            .eq("id", orderId);
+
+          if (error) throw error;
+
+          showToast("Repartidor asignado correctamente", "success");
+          await loadOrders();
+        } catch (error) {
+          showToast("Error al asignar repartidor", "danger");
+        }
+      };
+
+      function printOrder() {
+        const orderId =
+          document.getElementById("orderModalBody").dataset.orderId;
+        const order = currentOrders.find((o) => o.id == orderId);
+
+        if (!order) return;
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Cabecera
+        doc.setFontSize(20);
+        doc.text("CHIFA BONSAI", 20, 20);
+        doc.setFontSize(12);
+        doc.text("Comprobante de Pedido", 20, 30);
+        doc.text(`Número: #${order.order_number}`, 20, 40);
+        doc.text(
+          `Fecha: ${new Date(order.created_at).toLocaleString()}`,
+          20,
+          50
+        );
+
+        // Cliente
+        doc.text(`Cliente: ${order.customer_name}`, 20, 65);
+        doc.text(`Teléfono: ${order.customer_phone}`, 20, 75);
+
+        if (order.order_type === "delivery") {
+          doc.text(`Dirección: ${order.delivery_address}`, 20, 85);
+        } else {
+          doc.text(`Tipo: Recojo en local`, 20, 85);
+        }
+
+        // Items
+        let y = 100;
+        doc.text("Items:", 20, y);
+        y += 10;
+
+        order.order_items?.forEach((item) => {
+          doc.text(`${item.quantity}x ${item.product_name}`, 30, y);
+          doc.text(
+            `S/. ${(item.quantity * item.unit_price).toFixed(2)}`,
+            160,
+            y
+          );
+          y += 7;
+        });
+
+        // Totales
+        y += 10;
+        doc.text(
+          `Subtotal: S/. ${parseFloat(order.subtotal).toFixed(2)}`,
+          120,
+          y
+        );
+        y += 7;
+        doc.text(
+          `Delivery: S/. ${parseFloat(order.shipping_cost).toFixed(2)}`,
+          120,
+          y
+        );
+        y += 7;
+        doc.setFont(undefined, "bold");
+        doc.text(`Total: S/. ${parseFloat(order.total).toFixed(2)}`, 120, y);
+
+        // Estado
+        y += 15;
+        doc.setFont(undefined, "normal");
+        doc.text(`Estado: ${getStatusText(order.order_status)}`, 20, y);
+        doc.text(`Pago: ${order.payment_status}`, 20, y + 7);
+
+        doc.save(`pedido-${order.order_number}.pdf`);
+      }
+
+      function exportOrdersToCSV() {
+        const headers = [
+          "Número",
+          "Cliente",
+          "Teléfono",
+          "Estado",
+          "Tipo",
+          "Total",
+          "Fecha",
+          "Hora",
+          "Pago",
+          "Dirección",
+        ];
+        const csvData = [
+          headers,
+          ...currentOrders.map((order) => [
+            order.order_number,
+            order.customer_name,
+            order.customer_phone,
+            getStatusText(order.order_status),
+            order.order_type === "local" ? "Local" : "Delivery",
+            order.total,
+            new Date(order.created_at).toLocaleDateString(),
+            new Date(order.created_at).toLocaleTimeString(),
+            order.payment_status,
+            order.delivery_address || "Local",
+          ]),
+        ];
+
+        const csvContent = csvData
+          .map((row) => row.map((cell) => `"${cell}"`).join(","))
+          .join("\n");
+
+        const blob = new Blob([csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+
+        link.href = URL.createObjectURL(blob);
+        link.download = `pedidos-chifa-${
+          new Date().toISOString().split("T")[0]
+        }.csv`;
+        link.click();
+
+        showToast("Pedidos exportados a CSV", "success");
+      }
+
+      function showToast(message, type = "success") {
+        let container = document.getElementById("toastContainer");
+        if (!container) {
+          container = document.createElement("div");
+          container.id = "toastContainer";
+          container.className =
+            "toast-container position-fixed top-0 end-0 p-3";
+          document.body.appendChild(container);
+        }
+
+        const toastId = "toast-" + Date.now();
+        const toast = document.createElement("div");
+        toast.id = toastId;
+        toast.className = `toast align-items-center text-bg-${type} border-0`;
+        toast.setAttribute("role", "alert");
+        toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-${
+                          type === "success"
+                            ? "check-circle"
+                            : "exclamation-circle"
+                        } me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+
+        container.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        toast.addEventListener("hidden.bs.toast", () => {
+          toast.remove();
+        });
+      }
+    </script>
+  </body>
+</html>

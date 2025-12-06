@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Productos - Chifa Bonsai</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <!-- DataTables -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"
+    />
+
+    <style>
+      :root {
+        --primary-red: #c62828;
+        --primary-red-dark: #b71c1c;
+        --accent-gold: #ffb74d;
+        --dark-bg: #121212;
+        --light-bg: #f8f5f0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+      }
+
+      .sidebar {
+        min-height: 100vh;
+        background: linear-gradient(180deg, var(--dark-bg) 0%, #2c1810 100%);
+        color: white;
+        padding: 0;
+        position: fixed;
+        width: 250px;
+        z-index: 1000;
+      }
+
+      .sidebar-header {
+        padding: 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-header h4 {
+        margin: 0;
+        color: var(--accent-gold);
+        font-weight: 600;
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 1rem 1.5rem;
+        border-left: 4px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: white;
+        background: rgba(198, 40, 40, 0.2);
+        border-left-color: var(--primary-red);
+      }
+
+      .nav-link i {
+        width: 20px;
+        margin-right: 10px;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .page-header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .table-container {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .badge-stock {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+      }
+
+      .badge-stock.low {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .badge-stock.normal {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .search-box {
+        max-width: 300px;
+      }
+
+      .filter-badge {
+        cursor: pointer;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .nav-link span {
+          display: none;
+        }
+
+        .sidebar .nav-link i {
+          margin-right: 0;
+          width: 100%;
+          text-align: center;
+        }
+
+        .sidebar-header h4,
+        .sidebar-header small {
+          display: none;
+        }
+
+        .main-content {
+          margin-left: 70px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h4><i class="fas fa-utensils me-2"></i>Chifa Bonsai</h4>
+        <small>Panel de Administración</small>
+      </div>
+
+      <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="dashboard.html">
+          <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link active" href="productos.html">
+          <i class="fas fa-utensils"></i> <span>Productos</span>
+        </a>
+        <a class="nav-link" href="pedidos.html">
+          <i class="fas fa-shopping-cart"></i> <span>Pedidos</span>
+        </a>
+        <a class="nav-link" href="usuarios.html">
+          <i class="fas fa-users"></i> <span>Usuarios</span>
+        </a>
+        <a class="nav-link" href="reportes.html">
+          <i class="fas fa-chart-bar"></i> <span>Reportes</span>
+        </a>
+        <a class="nav-link" href="configuracion.html">
+          <i class="fas fa-cog"></i> <span>Configuración</span>
+        </a>
+
+        <div class="mt-auto p-3">
+          <button class="btn btn-outline-danger btn-sm w-100" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="mb-1">
+              <i class="fas fa-utensils me-2"></i>Gestión de Productos
+            </h3>
+            <p class="text-muted mb-0">
+              Administra el menú y productos del restaurante
+            </p>
+          </div>
+          <div>
+            <button class="btn btn-primary" id="newProductBtn">
+              <i class="fas fa-plus me-1"></i> Nuevo Producto
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mt-4">
+          <div class="col-md-3 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-primary text-white rounded p-3 me-3">
+                    <i class="fas fa-hamburger"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="totalProducts">0</h5>
+                    <small class="text-muted">Total Productos</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-success text-white rounded p-3 me-3">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="activeProducts">0</h5>
+                    <small class="text-muted">Activos</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-warning text-white rounded p-3 me-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="lowStockProductsCount">0</h5>
+                    <small class="text-muted">Stock Bajo</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                  <div class="bg-info text-white rounded p-3 me-3">
+                    <i class="fas fa-tags"></i>
+                  </div>
+                  <div>
+                    <h5 class="mb-0" id="totalCategories">0</h5>
+                    <small class="text-muted">Categorías</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters and Search -->
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            <span class="badge bg-secondary filter-badge" data-filter="all"
+              >Todos</span
+            >
+            <span class="badge bg-success filter-badge" data-filter="active"
+              >Activos</span
+            >
+            <span class="badge bg-danger filter-badge" data-filter="inactive"
+              >Inactivos</span
+            >
+            <span class="badge bg-warning filter-badge" data-filter="low-stock"
+              >Stock Bajo</span
+            >
+          </div>
+
+          <div class="d-flex gap-2">
+            <select
+              class="form-select form-select-sm"
+              id="categoryFilter"
+              style="max-width: 200px"
+            >
+              <option value="all">Todas las categorías</option>
+            </select>
+
+            <select
+              class="form-select form-select-sm"
+              id="sortBy"
+              style="max-width: 150px"
+            >
+              <option value="newest">Más recientes</option>
+              <option value="oldest">Más antiguos</option>
+              <option value="name-asc">Nombre A-Z</option>
+              <option value="name-desc">Nombre Z-A</option>
+              <option value="price-asc">Precio menor</option>
+              <option value="price-desc">Precio mayor</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              id="searchProducts"
+              placeholder="Buscar productos..."
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="clearSearch"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Table -->
+      <div class="table-container">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th width="250">Producto</th>
+                <th>Estado</th>
+                <th class="text-center">Stock</th>
+                <th class="text-end">Precio</th>
+                <th class="text-center">Tiempo</th>
+                <th>Descripción</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <!-- Cargado por JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation" class="mt-3">
+          <ul class="pagination justify-content-center" id="productsPagination">
+            <!-- Cargado por JavaScript -->
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Modal Producto -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle">Nuevo Producto</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <form id="productForm" novalidate>
+            <input type="hidden" id="productId" />
+            <input type="hidden" id="imageUrl" />
+
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-8">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Nombre del Producto *</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="productName"
+                        required
+                      />
+                      <div class="invalid-feedback">El nombre es requerido</div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Slug (URL)</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="productSlug"
+                      />
+                      <small class="text-muted"
+                        >Se genera automáticamente si se deja vacío</small
+                      >
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Precio (S/.) *</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="productPrice"
+                        step="0.01"
+                        min="0"
+                        required
+                      />
+                      <div class="invalid-feedback">El precio es requerido</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Stock *</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="productStock"
+                        min="0"
+                        required
+                      />
+                      <div class="invalid-feedback">El stock es requerido</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Stock Mínimo</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="productMinStock"
+                        min="0"
+                        value="5"
+                      />
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Categoría</label>
+                      <select class="form-select" id="productCategory">
+                        <option value="">Sin categoría</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label"
+                        >Tiempo de Preparación (min)</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="productPrepTime"
+                        min="1"
+                        value="15"
+                      />
+                    </div>
+
+                    <div class="col-12">
+                      <label class="form-label">Descripción Corta</label>
+                      <textarea
+                        class="form-control"
+                        id="productShortDesc"
+                        rows="2"
+                        maxlength="100"
+                      ></textarea>
+                      <small class="text-muted">Máximo 100 caracteres</small>
+                    </div>
+
+                    <div class="col-12">
+                      <label class="form-label">Descripción Completa</label>
+                      <textarea
+                        class="form-control"
+                        id="productDesc"
+                        rows="3"
+                      ></textarea>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="productActive"
+                          checked
+                        />
+                        <label class="form-check-label" for="productActive">
+                          Producto activo (visible para clientes)
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <label class="form-label">Imagen del Producto</label>
+                      <div class="mb-3">
+                        <input
+                          type="file"
+                          class="form-control"
+                          id="productImage"
+                          accept="image/*"
+                        />
+                        <small class="text-muted"
+                          >JPEG, PNG o WebP (max 5MB)</small
+                        >
+                      </div>
+
+                      <div id="productImagePreview" class="text-center mb-3">
+                        <div class="border rounded p-4 bg-light">
+                          <i class="fas fa-utensils fa-3x text-muted"></i>
+                          <p class="text-muted mt-2 mb-0">Sin imagen</p>
+                        </div>
+                      </div>
+
+                      <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Las imágenes ayudan a aumentar las ventas
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button type="button" class="btn btn-primary" id="saveProductBtn">
+                <i class="fas fa-save me-1"></i> Guardar Producto
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery (necesario para DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <!-- Nuestros módulos -->
+    <script type="module">
+      import { supabase } from "/js/supabaseClient.js";
+      import Auth from "/js/auth.js";
+
+      // Verificar autenticación
+      document.addEventListener("DOMContentLoaded", async function () {
+        const isAdmin = await Auth.isAdmin();
+        if (!isAdmin) {
+          window.location.href = "/catalogo.html";
+          return;
+        }
+
+        // Cargar productos
+        await loadProducts();
+
+        // Cargar categorías
+        await loadCategories();
+
+        // Configurar eventos
+        setupEventListeners();
+
+        // Configurar logout
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", async () => {
+            await Auth.logout();
+          });
+      });
+
+      async function loadProducts() {
+        try {
+          const { data: products } = await supabase
+            .from("products")
+            .select(
+              `
+                        *,
+                        categories(name)
+                    `
+            )
+            .order("created_at", { ascending: false });
+
+          updateProductsUI(products);
+          updateStats(products);
+        } catch (error) {
+          console.error("Error cargando productos:", error);
+          showToast("Error al cargar productos", "danger");
+        }
+      }
+
+      async function loadCategories() {
+        const { data: categories } = await supabase
+          .from("categories")
+          .select("*")
+          .eq("is_active", true)
+          .order("sort_order");
+
+        const categoryFilter = document.getElementById("categoryFilter");
+        const modalCategory = document.getElementById("productCategory");
+
+        if (categories) {
+          const options = categories
+            .map((cat) => `<option value="${cat.id}">${cat.name}</option>`)
+            .join("");
+
+          categoryFilter.innerHTML = `<option value="all">Todas las categorías</option>${options}`;
+          modalCategory.innerHTML = `<option value="">Sin categoría</option>${options}`;
+        }
+      }
+
+      function updateProductsUI(products) {
+        const tbody = document.getElementById("productsTableBody");
+
+        if (!products || products.length === 0) {
+          tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-utensils fa-3x mb-3"></i><br>
+                                No hay productos registrados
+                            </div>
+                            <button class="btn btn-primary mt-3" id="newProductBtnEmpty">
+                                <i class="fas fa-plus me-1"></i> Crear Primer Producto
+                            </button>
+                        </td>
+                    </tr>
+                `;
+
+          document
+            .getElementById("newProductBtnEmpty")
+            ?.addEventListener("click", () => {
+              new bootstrap.Modal(
+                document.getElementById("productModal")
+              ).show();
+            });
+
+          return;
+        }
+
+        tbody.innerHTML = products
+          .map((product) => {
+            const stockClass =
+              product.stock <= (product.min_stock || 5) ? "low" : "normal";
+            const stockText =
+              product.stock <= (product.min_stock || 5)
+                ? `<span class="badge-stock low" title="Stock bajo">
+                        <i class="fas fa-exclamation-triangle"></i> ${product.stock}
+                    </span>`
+                : `<span class="badge-stock normal">${product.stock}</span>`;
+
+            return `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                ${
+                                  product.image_url
+                                    ? `
+                                    <img src="${product.image_url}" class="product-img me-3" alt="${product.name}">
+                                `
+                                    : `
+                                    <div class="product-img me-3 bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-utensils text-muted"></i>
+                                    </div>
+                                `
+                                }
+                                <div>
+                                    <strong class="d-block">${
+                                      product.name
+                                    }</strong>
+                                    <small class="text-muted">${
+                                      product.categories?.name ||
+                                      "Sin categoría"
+                                    }</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge ${
+                              product.is_active ? "bg-success" : "bg-danger"
+                            }">
+                                ${product.is_active ? "Activo" : "Inactivo"}
+                            </span>
+                        </td>
+                        <td class="text-center">${stockText}</td>
+                        <td class="text-end">S/. ${parseFloat(
+                          product.price
+                        ).toFixed(2)}</td>
+                        <td class="text-center">
+                            <small class="text-muted">${
+                              product.preparation_time || 15
+                            } min</small>
+                        </td>
+                        <td>
+                            ${
+                              product.short_description
+                                ? `<small class="text-muted">${product.short_description.substring(
+                                    0,
+                                    50
+                                  )}...</small>`
+                                : '<span class="text-muted">-</span>'
+                            }
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="editProduct('${
+                                  product.id
+                                }')" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="confirmDelete('${
+                                  product.id
+                                }')" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="btn ${
+                                  product.is_active
+                                    ? "btn-outline-warning"
+                                    : "btn-outline-success"
+                                }" 
+                                        onclick="toggleStatus('${product.id}')" 
+                                        title="${
+                                          product.is_active
+                                            ? "Desactivar"
+                                            : "Activar"
+                                        }">
+                                    <i class="fas ${
+                                      product.is_active
+                                        ? "fa-eye-slash"
+                                        : "fa-eye"
+                                    }"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+          })
+          .join("");
+
+        // Inicializar DataTables
+        if ($.fn.DataTable.isDataTable("table")) {
+          $("table").DataTable().destroy();
+        }
+
+        $("table").DataTable({
+          language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json",
+          },
+          pageLength: 10,
+          responsive: true,
+        });
+      }
+
+      function updateStats(products) {
+        const totalProducts = products?.length || 0;
+        const activeProducts = products?.filter((p) => p.is_active).length || 0;
+        const lowStockProducts =
+          products?.filter((p) => p.stock <= (p.min_stock || 5)).length || 0;
+
+        document.getElementById("totalProducts").textContent = totalProducts;
+        document.getElementById("activeProducts").textContent = activeProducts;
+        document.getElementById("lowStockProductsCount").textContent =
+          lowStockProducts;
+
+        // Obtener cantidad de categorías
+        supabase
+          .from("categories")
+          .select("id", { count: "exact" })
+          .then(({ count }) => {
+            document.getElementById("totalCategories").textContent = count || 0;
+          });
+      }
+
+      function setupEventListeners() {
+        // Nuevo producto
+        document
+          .getElementById("newProductBtn")
+          .addEventListener("click", () => {
+            showProductModal();
+          });
+
+        // Guardar producto
+        document
+          .getElementById("saveProductBtn")
+          .addEventListener("click", async () => {
+            await saveProduct();
+          });
+
+        // Subir imagen
+        document
+          .getElementById("productImage")
+          .addEventListener("change", async (e) => {
+            await handleImageUpload(e.target.files[0]);
+          });
+
+        // Búsqueda
+        document
+          .getElementById("searchProducts")
+          .addEventListener("input", (e) => {
+            filterProducts(e.target.value);
+          });
+
+        // Limpiar búsqueda
+        document.getElementById("clearSearch").addEventListener("click", () => {
+          document.getElementById("searchProducts").value = "";
+          filterProducts("");
+        });
+
+        // Filtros rápidos
+        document.querySelectorAll(".filter-badge").forEach((badge) => {
+          badge.addEventListener("click", (e) => {
+            const filter = e.target.dataset.filter;
+            applyFilter(filter);
+          });
+        });
+
+        // Ordenar
+        document.getElementById("sortBy").addEventListener("change", (e) => {
+          sortProducts(e.target.value);
+        });
+
+        // Filtrar por categoría
+        document
+          .getElementById("categoryFilter")
+          .addEventListener("change", (e) => {
+            filterByCategory(e.target.value);
+          });
+      }
+
+      function showProductModal(product = null) {
+        const modal = new bootstrap.Modal(
+          document.getElementById("productModal")
+        );
+        const form = document.getElementById("productForm");
+
+        form.reset();
+        form.classList.remove("was-validated");
+        document.getElementById("productId").value = "";
+        document.getElementById("imageUrl").value = "";
+        document.getElementById("modalTitle").textContent = product
+          ? "Editar Producto"
+          : "Nuevo Producto";
+        document.getElementById("productImagePreview").innerHTML = `
+                <div class="border rounded p-4 bg-light">
+                    <i class="fas fa-utensils fa-3x text-muted"></i>
+                    <p class="text-muted mt-2 mb-0">Sin imagen</p>
+                </div>
+            `;
+
+        if (product) {
+          // Cargar datos del producto
+          supabase
+            .from("products")
+            .select("*")
+            .eq("id", product)
+            .single()
+            .then(({ data }) => {
+              if (data) {
+                document.getElementById("productId").value = data.id;
+                document.getElementById("productName").value = data.name;
+                document.getElementById("productSlug").value = data.slug || "";
+                document.getElementById("productPrice").value = data.price;
+                document.getElementById("productStock").value = data.stock;
+                document.getElementById("productMinStock").value =
+                  data.min_stock || 5;
+                document.getElementById("productCategory").value =
+                  data.category_id || "";
+                document.getElementById("productShortDesc").value =
+                  data.short_description || "";
+                document.getElementById("productDesc").value =
+                  data.description || "";
+                document.getElementById("productPrepTime").value =
+                  data.preparation_time || 15;
+                document.getElementById("productActive").checked =
+                  data.is_active !== false;
+
+                if (data.image_url) {
+                  document.getElementById("productImagePreview").innerHTML = `
+                                    <img src="${data.image_url}" class="img-fluid rounded" style="max-height: 200px;">
+                                    <small class="d-block mt-1 text-center">Imagen actual</small>
+                                `;
+                  document.getElementById("imageUrl").value = data.image_url;
+                }
+              }
+            });
+        }
+
+        modal.show();
+      }
+
+      async function handleImageUpload(file) {
+        if (!file) return;
+
+        const validTypes = ["image/jpeg", "image/png", "image/webp"];
+        if (!validTypes.includes(file.type)) {
+          showToast("Solo se permiten imágenes JPG, PNG o WebP", "danger");
+          return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+          showToast("La imagen no debe superar 5MB", "danger");
+          return;
+        }
+
+        // Mostrar preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById("productImagePreview").innerHTML = `
+                    <img src="${e.target.result}" class="img-fluid rounded" style="max-height: 200px;">
+                `;
+        };
+        reader.readAsDataURL(file);
+
+        // Subir a Supabase Storage (requiere bucket configurado)
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${Date.now()}-${Math.random()
+          .toString(36)
+          .substr(2)}.${fileExt}`;
+
+        try {
+          const { error } = await supabase.storage
+            .from("productos")
+            .upload(fileName, file);
+
+          if (error) throw error;
+
+          // Obtener URL pública
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from("productos").getPublicUrl(fileName);
+
+          document.getElementById("imageUrl").value = publicUrl;
+          showToast("Imagen subida correctamente", "success");
+        } catch (error) {
+          console.error("Error subiendo imagen:", error);
+          showToast("Error al subir imagen", "danger");
+        }
+      }
+
+      async function saveProduct() {
+        const form = document.getElementById("productForm");
+        if (!form.checkValidity()) {
+          form.classList.add("was-validated");
+          return;
+        }
+
+        const productData = {
+          name: document.getElementById("productName").value.trim(),
+          slug:
+            document.getElementById("productSlug").value.trim() ||
+            generateSlug(document.getElementById("productName").value),
+          price: parseFloat(document.getElementById("productPrice").value),
+          stock: parseInt(document.getElementById("productStock").value),
+          min_stock:
+            parseInt(document.getElementById("productMinStock").value) || 5,
+          category_id: document.getElementById("productCategory").value || null,
+          short_description: document
+            .getElementById("productShortDesc")
+            .value.trim(),
+          description: document.getElementById("productDesc").value.trim(),
+          preparation_time:
+            parseInt(document.getElementById("productPrepTime").value) || 15,
+          is_active: document.getElementById("productActive").checked,
+          image_url: document.getElementById("imageUrl").value || null,
+          updated_at: new Date().toISOString(),
+        };
+
+        const productId = document.getElementById("productId").value;
+
+        try {
+          if (productId) {
+            // Actualizar
+            const { error } = await supabase
+              .from("products")
+              .update(productData)
+              .eq("id", productId);
+
+            if (error) throw error;
+            showToast("Producto actualizado correctamente", "success");
+          } else {
+            // Crear nuevo
+            const { error } = await supabase
+              .from("products")
+              .insert([productData]);
+
+            if (error) throw error;
+            showToast("Producto creado correctamente", "success");
+          }
+
+          // Cerrar modal y recargar
+          bootstrap.Modal.getInstance(
+            document.getElementById("productModal")
+          ).hide();
+          await loadProducts();
+        } catch (error) {
+          console.error("Error guardando producto:", error);
+          showToast("Error al guardar producto: " + error.message, "danger");
+        }
+      }
+
+      // Funciones globales para los botones
+      window.editProduct = async function (productId) {
+        showProductModal(productId);
+      };
+
+      window.confirmDelete = async function (productId) {
+        if (
+          !confirm(
+            "¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer."
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const { error } = await supabase
+            .from("products")
+            .delete()
+            .eq("id", productId);
+
+          if (error) throw error;
+
+          showToast("Producto eliminado", "success");
+          await loadProducts();
+        } catch (error) {
+          showToast("Error al eliminar producto", "danger");
+        }
+      };
+
+      window.toggleStatus = async function (productId) {
+        try {
+          const { data: product } = await supabase
+            .from("products")
+            .select("is_active")
+            .eq("id", productId)
+            .single();
+
+          if (!product) return;
+
+          const { error } = await supabase
+            .from("products")
+            .update({ is_active: !product.is_active })
+            .eq("id", productId);
+
+          if (error) throw error;
+
+          showToast("Estado actualizado", "success");
+          await loadProducts();
+        } catch (error) {
+          showToast("Error al cambiar estado", "danger");
+        }
+      };
+
+      function generateSlug(name) {
+        return name
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
+
+      function filterProducts(query) {
+        const table = $("table").DataTable();
+        table.search(query).draw();
+      }
+
+      function applyFilter(filter) {
+        const table = $("table").DataTable();
+
+        switch (filter) {
+          case "active":
+            table.column(1).search("Activo").draw();
+            break;
+          case "inactive":
+            table.column(1).search("Inactivo").draw();
+            break;
+          case "low-stock":
+            // Esta filtración sería más compleja con DataTables
+            // Por ahora recargamos con filtro manual
+            filterLowStock();
+            break;
+          default:
+            table.search("").columns().search("").draw();
+        }
+      }
+
+      async function filterLowStock() {
+        const { data: products } = await supabase
+          .from("products")
+          .select(
+            `
+                    *,
+                    categories(name)
+                `
+          )
+          .lte("stock", supabase.raw("min_stock + 0"));
+
+        updateProductsUI(products);
+      }
+
+      async function filterByCategory(categoryId) {
+        if (categoryId === "all") {
+          await loadProducts();
+          return;
+        }
+
+        const { data: products } = await supabase
+          .from("products")
+          .select(
+            `
+                    *,
+                    categories(name)
+                `
+          )
+          .eq("category_id", categoryId);
+
+        updateProductsUI(products);
+      }
+
+      function sortProducts(sortBy) {
+        const table = $("table").DataTable();
+
+        switch (sortBy) {
+          case "newest":
+            table.order([0, "desc"]).draw();
+            break;
+          case "oldest":
+            table.order([0, "asc"]).draw();
+            break;
+          case "name-asc":
+            table.order([1, "asc"]).draw();
+            break;
+          case "name-desc":
+            table.order([1, "desc"]).draw();
+            break;
+          case "price-asc":
+            table.order([3, "asc"]).draw();
+            break;
+          case "price-desc":
+            table.order([3, "desc"]).draw();
+            break;
+        }
+      }
+
+      function showToast(message, type = "success") {
+        // Crear contenedor si no existe
+        let container = document.getElementById("toastContainer");
+        if (!container) {
+          container = document.createElement("div");
+          container.id = "toastContainer";
+          container.className =
+            "toast-container position-fixed top-0 end-0 p-3";
+          document.body.appendChild(container);
+        }
+
+        // Crear toast
+        const toastId = "toast-" + Date.now();
+        const toast = document.createElement("div");
+        toast.id = toastId;
+        toast.className = `toast align-items-center text-bg-${type} border-0`;
+        toast.setAttribute("role", "alert");
+        toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-${
+                          type === "success"
+                            ? "check-circle"
+                            : "exclamation-circle"
+                        } me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+
+        container.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        // Remover después de animación
+        toast.addEventListener("hidden.bs.toast", () => {
+          toast.remove();
+        });
+      }
+    </script>
+  </body>
+</html>

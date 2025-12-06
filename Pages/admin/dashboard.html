@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin - Chifa Bonsai</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary-red: #c62828;
+        --primary-red-dark: #b71c1c;
+        --accent-gold: #ffb74d;
+        --dark-bg: #121212;
+        --light-bg: #f8f5f0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f5f5f5;
+      }
+
+      .sidebar {
+        min-height: 100vh;
+        background: linear-gradient(180deg, var(--dark-bg) 0%, #2c1810 100%);
+        color: white;
+        padding: 0;
+        position: fixed;
+        width: 250px;
+        z-index: 1000;
+      }
+
+      .sidebar-header {
+        padding: 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-header h4 {
+        margin: 0;
+        color: var(--accent-gold);
+        font-weight: 600;
+      }
+
+      .sidebar-header small {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.8rem;
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 1rem 1.5rem;
+        border-left: 4px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: white;
+        background: rgba(198, 40, 40, 0.2);
+        border-left-color: var(--primary-red);
+      }
+
+      .nav-link i {
+        width: 20px;
+        margin-right: 10px;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .navbar-top {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        margin-bottom: 2rem;
+        border-radius: 10px;
+      }
+
+      .stats-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s;
+        height: 100%;
+      }
+
+      .stats-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .bg-red {
+        background: linear-gradient(135deg, #ff6b6b, #c62828);
+      }
+      .bg-blue {
+        background: linear-gradient(135deg, #4dabf7, #1971c2);
+      }
+      .bg-green {
+        background: linear-gradient(135deg, #51cf66, #2b8a3e);
+      }
+      .bg-orange {
+        background: linear-gradient(135deg, #ffa94d, #e8590c);
+      }
+
+      .order-type-badge.local {
+        background: #1971c2;
+      }
+      .order-type-badge.delivery {
+        background: #e8590c;
+      }
+
+      .badge-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .status-pendiente {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .status-confirmado {
+        background: #cce5ff;
+        color: #004085;
+      }
+      .status-preparando {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+      .status-listo {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status-entregado {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status-cancelado {
+        background: #f8d7da;
+        color: #721c24;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h4><i class="fas fa-utensils me-2"></i>Chifa Bonsai</h4>
+        <small>Panel de Administración</small>
+      </div>
+
+      <nav class="nav flex-column mt-3">
+        <a class="nav-link active" href="dashboard.html">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a class="nav-link" href="productos.html">
+          <i class="fas fa-utensils"></i> Productos
+        </a>
+        <a class="nav-link" href="pedidos.html">
+          <i class="fas fa-shopping-cart"></i> Pedidos
+          <span class="badge bg-danger float-end mt-1" id="pendingOrdersBadge"
+            >0</span
+          >
+        </a>
+        <a class="nav-link" href="usuarios.html">
+          <i class="fas fa-users"></i> Usuarios
+        </a>
+        <a class="nav-link" href="reportes.html">
+          <i class="fas fa-chart-bar"></i> Reportes
+        </a>
+        <a class="nav-link" href="configuracion.html">
+          <i class="fas fa-cog"></i> Configuración
+        </a>
+
+        <div class="mt-auto p-3">
+          <div class="card bg-dark border-0">
+            <div class="card-body text-center p-3">
+              <small class="text-muted d-block mb-2">Sesión activa</small>
+              <button
+                class="btn btn-outline-danger btn-sm w-100"
+                id="logoutBtn"
+              >
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Top Navbar -->
+      <div class="navbar-top">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-0" id="greeting">Buenos días, Administrador</h5>
+            <small class="text-muted" id="currentDate"></small>
+          </div>
+          <div>
+            <button class="btn btn-outline-primary me-2" id="refreshBtn">
+              <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+            <span class="badge bg-success">
+              <i class="fas fa-circle"></i> En línea
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card stats-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted">Ingresos Hoy</h6>
+                  <h3 id="todayRevenue">S/. 0.00</h3>
+                  <small class="text-success"
+                    ><i class="fas fa-arrow-up"></i> 12% vs ayer</small
+                  >
+                </div>
+                <div class="stats-icon bg-red text-white">
+                  <i class="fas fa-money-bill-wave"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card stats-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted">Pedidos Hoy</h6>
+                  <h3 id="todayOrders">0</h3>
+                  <small class="text-success"
+                    ><i class="fas fa-arrow-up"></i> 5 nuevos</small
+                  >
+                </div>
+                <div class="stats-icon bg-blue text-white">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card stats-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted">Pendientes</h6>
+                  <h3 id="pendingOrders">0</h3>
+                  <small class="text-warning">Necesitan atención</small>
+                </div>
+                <div class="stats-icon bg-orange text-white">
+                  <i class="fas fa-clock"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card stats-card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="text-muted">Stock Bajo</h6>
+                  <h3 id="lowStockCount">0</h3>
+                  <small class="text-danger">Necesitan reabastecimiento</small>
+                </div>
+                <div class="stats-icon bg-green text-white">
+                  <i class="fas fa-box"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders and Quick Stats -->
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h6 class="mb-0">
+                <i class="fas fa-history me-2"></i>Pedidos Recientes
+              </h6>
+              <a href="pedidos.html" class="btn btn-sm btn-outline-primary"
+                >Ver todos</a
+              >
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Pedido</th>
+                      <th>Estado</th>
+                      <th class="text-end">Total</th>
+                      <th>Hora</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentOrdersBody">
+                    <!-- Cargado por JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i>Stock Bajo
+              </h6>
+            </div>
+            <div class="card-body" id="lowStockProducts">
+              <!-- Cargado por JavaScript -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="fas fa-chart-line me-2"></i>Productos Populares
+              </h6>
+            </div>
+            <div class="card-body" id="topProducts">
+              <!-- Cargado por JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-2 col-6">
+                  <a
+                    href="productos.html"
+                    class="btn btn-outline-primary w-100"
+                  >
+                    <i class="fas fa-plus fa-2x mb-2"></i><br />
+                    Nuevo Producto
+                  </a>
+                </div>
+                <div class="col-md-2 col-6">
+                  <button
+                    class="btn btn-outline-success w-100"
+                    id="printReportBtn"
+                  >
+                    <i class="fas fa-print fa-2x mb-2"></i><br />
+                    Imprimir Reporte
+                  </button>
+                </div>
+                <div class="col-md-2 col-6">
+                  <button
+                    class="btn btn-outline-warning w-100"
+                    id="manageCategoriesBtn"
+                  >
+                    <i class="fas fa-tags fa-2x mb-2"></i><br />
+                    Categorías
+                  </button>
+                </div>
+                <div class="col-md-2 col-6">
+                  <button class="btn btn-outline-info w-100" id="viewStatsBtn">
+                    <i class="fas fa-chart-pie fa-2x mb-2"></i><br />
+                    Estadísticas
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jsPDF para reportes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Nuestros módulos -->
+    <script type="module">
+      // Importar módulos
+      import Auth from "../../js/utils/auth.js";
+      import { supabase } from "../../js/supabaseClient.js";
+
+      // Verificar autenticación
+      document.addEventListener("DOMContentLoaded", async function () {
+        const isAdmin = await Auth.isAdmin();
+        if (!isAdmin) {
+          window.location.href = "/catalogo.html";
+          return;
+        }
+
+        // Cargar nombre del usuario
+        const user = await Auth.getCurrentUser();
+        if (user) {
+          const profile = await Auth.getProfile();
+          const name = profile?.full_name || "Administrador";
+          const hour = new Date().getHours();
+          let greeting = "Buenas noches";
+          if (hour < 12) greeting = "Buenos días";
+          else if (hour < 19) greeting = "Buenas tardes";
+
+          document.getElementById(
+            "greeting"
+          ).textContent = `${greeting}, ${name}`;
+        }
+
+        // Fecha actual
+        const now = new Date();
+        document.getElementById("currentDate").textContent =
+          now.toLocaleDateString("es-ES", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+        // Configurar logout
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", async () => {
+            await Auth.logout();
+          });
+
+        // Cargar datos del dashboard
+        await loadDashboardData();
+
+        // Actualizar en tiempo real
+        setupRealtimeUpdates();
+      });
+
+      async function loadDashboardData() {
+        try {
+          const today = new Date();
+          const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+          const endOfDay = new Date(
+            today.setHours(23, 59, 59, 999)
+          ).toISOString();
+
+          // 1. Estadísticas del día
+          const { data: todayStats } = await supabase
+            .from("orders")
+            .select("total, order_status")
+            .gte("created_at", startOfDay)
+            .lte("created_at", endOfDay);
+
+          // Calcular métricas
+          const todayRevenue =
+            todayStats
+              ?.filter((o) => o.order_status !== "cancelado")
+              ?.reduce((sum, order) => sum + parseFloat(order.total || 0), 0) ||
+            0;
+
+          const todayOrders = todayStats?.length || 0;
+          const pendingOrders =
+            todayStats?.filter((o) =>
+              ["pendiente", "confirmado", "preparando"].includes(o.order_status)
+            )?.length || 0;
+
+          // 2. Productos bajos en stock
+          const { data: lowStock } = await supabase
+            .from("products")
+            .select("id, name, stock, min_stock")
+            .lte("stock", supabase.raw("min_stock + 5"))
+            .eq("is_active", true)
+            .limit(5);
+
+          // 3. Pedidos recientes (últimos 5)
+          const { data: recentOrders } = await supabase
+            .from("orders")
+            .select(
+              `
+                        id,
+                        order_number,
+                        customer_name,
+                        total,
+                        order_status,
+                        order_type,
+                        created_at
+                    `
+            )
+            .order("created_at", { ascending: false })
+            .limit(5);
+
+          // Actualizar UI
+          document.getElementById(
+            "todayRevenue"
+          ).textContent = `S/. ${todayRevenue.toFixed(2)}`;
+          document.getElementById("todayOrders").textContent = todayOrders;
+          document.getElementById("pendingOrders").textContent = pendingOrders;
+          document.getElementById("lowStockCount").textContent =
+            lowStock?.length || 0;
+          document.getElementById("pendingOrdersBadge").textContent =
+            pendingOrders;
+
+          // Actualizar pedidos recientes
+          updateRecentOrders(recentOrders);
+
+          // Actualizar stock bajo
+          updateLowStock(lowStock);
+        } catch (error) {
+          console.error("Error cargando dashboard:", error);
+        }
+      }
+
+      function updateRecentOrders(orders) {
+        const tbody = document.getElementById("recentOrdersBody");
+        if (!tbody || !orders) return;
+
+        tbody.innerHTML = orders
+          .map(
+            (order) => `
+                <tr>
+                    <td>
+                        <strong>#${order.order_number}</strong><br>
+                        <small class="text-muted">${order.customer_name}</small>
+                    </td>
+                    <td>
+                        <span class="badge-status status-${order.order_status}">
+                            ${getStatusText(order.order_status)}
+                        </span>
+                    </td>
+                    <td class="text-end">S/. ${parseFloat(order.total).toFixed(
+                      2
+                    )}</td>
+                    <td>${new Date(order.created_at).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}</td>
+                    <td>
+                        <a href="pedidos.html?order=${
+                          order.id
+                        }" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+      }
+
+      function updateLowStock(products) {
+        const container = document.getElementById("lowStockProducts");
+        if (!container) return;
+
+        if (!products || products.length === 0) {
+          container.innerHTML = `
+                    <div class="alert alert-success mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Todo el stock está en niveles adecuados
+                    </div>
+                `;
+          return;
+        }
+
+        container.innerHTML = products
+          .map(
+            (product) => `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong>${product.name}</strong><br>
+                        <small class="text-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Stock: ${product.stock} | Mínimo: ${product.min_stock}
+                        </small>
+                    </div>
+                    <a href="productos.html" class="btn btn-sm btn-warning">
+                        <i class="fas fa-box"></i>
+                    </a>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      function getStatusText(status) {
+        const texts = {
+          pendiente: "Pendiente",
+          confirmado: "Confirmado",
+          preparando: "Preparando",
+          listo: "Listo",
+          en_camino: "En camino",
+          entregado: "Entregado",
+          cancelado: "Cancelado",
+        };
+        return texts[status] || status;
+      }
+
+      function setupRealtimeUpdates() {
+        // Suscribirse a cambios en pedidos
+        supabase
+          .channel("dashboard-orders")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "orders" },
+            () => loadDashboardData()
+          )
+          .subscribe();
+      }
+
+      // Botón de refrescar
+      document.getElementById("refreshBtn")?.addEventListener("click", () => {
+        loadDashboardData();
+      });
+
+      // Botón de imprimir reporte
+      document
+        .getElementById("printReportBtn")
+        ?.addEventListener("click", () => {
+          printDailyReport();
+        });
+
+      async function printDailyReport() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFontSize(20);
+        doc.text("CHIFA BONSAI - Reporte Diario", 20, 20);
+        doc.setFontSize(12);
+        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 30);
+        doc.text(`Hora: ${new Date().toLocaleTimeString()}`, 20, 40);
+
+        doc.save(`reporte-${new Date().toISOString().split("T")[0]}.pdf`);
+      }
+    </script>
+  </body>
+</html>

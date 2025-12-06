@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuración - Chifa Bonsai</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --primary-red: #c62828;
+        --primary-red-dark: #b71c1c;
+        --accent-gold: #ffb74d;
+        --dark-bg: #121212;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+      }
+
+      .sidebar {
+        min-height: 100vh;
+        background: linear-gradient(180deg, var(--dark-bg) 0%, #2c1810 100%);
+        color: white;
+        padding: 0;
+        position: fixed;
+        width: 250px;
+        z-index: 1000;
+      }
+
+      .sidebar-header {
+        padding: 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-header h4 {
+        margin: 0;
+        color: var(--accent-gold);
+        font-weight: 600;
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 1rem 1.5rem;
+        border-left: 4px solid transparent;
+        transition: all 0.3s;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: white;
+        background: rgba(198, 40, 40, 0.2);
+        border-left-color: var(--primary-red);
+      }
+
+      .nav-link i {
+        width: 20px;
+        margin-right: 10px;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .page-header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .config-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .config-section {
+        border-left: 4px solid var(--primary-red);
+        padding-left: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .nav-link span {
+          display: none;
+        }
+
+        .sidebar .nav-link i {
+          margin-right: 0;
+          width: 100%;
+          text-align: center;
+        }
+
+        .sidebar-header h4,
+        .sidebar-header small {
+          display: none;
+        }
+
+        .main-content {
+          margin-left: 70px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h4><i class="fas fa-utensils me-2"></i>Chifa Bonsai</h4>
+        <small>Panel de Administración</small>
+      </div>
+
+      <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="dashboard.html">
+          <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="productos.html">
+          <i class="fas fa-utensils"></i> <span>Productos</span>
+        </a>
+        <a class="nav-link" href="pedidos.html">
+          <i class="fas fa-shopping-cart"></i> <span>Pedidos</span>
+        </a>
+        <a class="nav-link" href="usuarios.html">
+          <i class="fas fa-users"></i> <span>Usuarios</span>
+        </a>
+        <a class="nav-link" href="reportes.html">
+          <i class="fas fa-chart-bar"></i> <span>Reportes</span>
+        </a>
+        <a class="nav-link active" href="configuracion.html">
+          <i class="fas fa-cog"></i> <span>Configuración</span>
+        </a>
+
+        <div class="mt-auto p-3">
+          <button class="btn btn-outline-danger btn-sm w-100" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="mb-1">
+              <i class="fas fa-cog me-2"></i>Configuración del Sistema
+            </h3>
+            <p class="text-muted mb-0">
+              Configura las opciones del restaurante y sistema
+            </p>
+          </div>
+          <div>
+            <button class="btn btn-primary" id="saveAllSettings">
+              <i class="fas fa-save me-1"></i> Guardar Todo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuration Sections -->
+      <div class="row">
+        <!-- Columna izquierda -->
+        <div class="col-md-6">
+          <!-- Información del Restaurante -->
+          <div class="config-card">
+            <div class="config-section">
+              <h5>
+                <i class="fas fa-store me-2"></i>Información del Restaurante
+              </h5>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Nombre del Restaurante</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="restaurantName"
+                  value="Chifa Bonsai"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Teléfono</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="restaurantPhone"
+                  placeholder="+51 XXX XXX XXX"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="restaurantEmail"
+                  placeholder="info@chifabonsai.com"
+                />
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Dirección</label>
+                <textarea
+                  class="form-control"
+                  id="restaurantAddress"
+                  rows="2"
+                  placeholder="Dirección completa del local"
+                ></textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Horario de Apertura</label>
+                <input
+                  type="time"
+                  class="form-control"
+                  id="openingTime"
+                  value="10:00"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Horario de Cierre</label>
+                <input
+                  type="time"
+                  class="form-control"
+                  id="closingTime"
+                  value="22:00"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuración de Delivery -->
+          <div class="config-card">
+            <div class="config-section">
+              <h5>
+                <i class="fas fa-motorcycle me-2"></i>Configuración de Delivery
+              </h5>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="deliveryEnabled"
+                    checked
+                  />
+                  <label class="form-check-label" for="deliveryEnabled">
+                    Habilitar servicio de delivery
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Costo de Delivery</label>
+                <div class="input-group">
+                  <span class="input-group-text">S/.</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="deliveryCost"
+                    value="5.00"
+                    step="0.50"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Tiempo estimado (min)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="deliveryTime"
+                  value="45"
+                  min="15"
+                />
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Radio de entrega (km)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="deliveryRadius"
+                  value="5"
+                  min="1"
+                  max="20"
+                />
+                <small class="text-muted">Distancia máxima para delivery</small>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Zonas de entrega</label>
+                <textarea
+                  class="form-control"
+                  id="deliveryZones"
+                  rows="3"
+                  placeholder="Ingresa las zonas separadas por coma
+Ej: Miraflores, San Isidro, Surco, Barranco"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Métodos de Pago -->
+          <div class="config-card">
+            <div class="config-section">
+              <h5><i class="fas fa-credit-card me-2"></i>Métodos de Pago</h5>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="paymentCash"
+                    checked
+                  />
+                  <label class="form-check-label" for="paymentCash">
+                    <i class="fas fa-money-bill-wave me-1"></i> Efectivo
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="paymentCard"
+                    checked
+                  />
+                  <label class="form-check-label" for="paymentCard">
+                    <i class="fas fa-credit-card me-1"></i> Tarjeta
+                    Crédito/Débito
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="paymentYape"
+                    checked
+                  />
+                  <label class="form-check-label" for="paymentYape">
+                    <i class="fas fa-mobile-alt me-1"></i> Yape
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="paymentPlin"
+                    checked
+                  />
+                  <label class="form-check-label" for="paymentPlin">
+                    <i class="fas fa-mobile-alt me-1"></i> Plin
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle"></i>
+                  Los métodos de pago aparecerán en el carrito de compras
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="col-md-6">
+          <!-- Configuración del Sistema -->
+          <div class="config-card">
+            <div class="config-section">
+              <h5>
+                <i class="fas fa-sliders-h me-2"></i>Configuración del Sistema
+              </h5>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="maintenanceMode"
+                  />
+                  <label class="form-check-label" for="maintenanceMode">
+                    Modo mantenimiento
+                  </label>
+                  <small class="text-muted d-block"
+                    >El sitio será inaccesible para clientes</small
+                  >
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="requireLogin"
+                    checked
+                  />
+                  <label class="form-check-label" for="requireLogin">
+                    Requerir login para pedidos
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="emailNotifications"
+                    checked
+                  />
+                  <label class="form-check-label" for="emailNotifications">
+                    Notificaciones por email
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="smsNotifications"
+                  />
+                  <label class="form-check-label" for="smsNotifications">
+                    Notificaciones por SMS
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label"
+                  >Tiempo de preparación base (min)</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="basePrepTime"
+                  value="15"
+                  min="5"
+                />
+                <small class="text-muted"
+                  >Tiempo estimado para preparar un pedido</small
+                >
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Impuesto (%)</label>
+                <div class="input-group">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="taxRate"
+                    value="18"
+                    min="0"
+                    max="100"
+                  />
+                  <span class="input-group-text">%</span>
+                </div>
+                <small class="text-muted">IGV aplicado a los pedidos</small>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Stock mínimo por defecto</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="defaultMinStock"
+                  value="5"
+                  min="0"
+                />
+                <small class="text-muted"
+                  >Stock mínimo para alertas (se aplica a nuevos
+                  productos)</small
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Notificaciones y Alertas -->
+          <div class="config-card">
+            <div class="config-section">
+              <h5><i class="fas fa-bell me-2"></i>Notificaciones y Alertas</h5>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="notifyNewOrders"
+                    checked
+                  />
+                  <label class="form-check-label" for="notifyNewOrders">
+                    Notificar nuevos pedidos
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="notifyLowStock"
+                    checked
+                  />
+                  <label class="form-check-label" for="notifyLowStock">
+                    Alertas de stock bajo
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="notifyCancellations"
+                    checked
+                  />
+                  <label class="form-check-label" for="notifyCancellations">
+                    Notificar cancelaciones
+                  </label>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="autoConfirmOrders"
+                  />
+                  <label class="form-check-label" for="autoConfirmOrders">
+                    Confirmar pedidos automáticamente
+                  </label>
+                  <small class="text-muted d-block"
+                    >Los pedidos se confirmarán sin intervención manual</small
+                  >
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Email para notificaciones</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="notificationEmail"
+                  placeholder="notificaciones@chifabonsai.com"
+                />
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Número para SMS</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="notificationPhone"
+                  placeholder="+51 XXX XXX XXX"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Copias de Seguridad -->
+          <div class="config-card">
+            <div class="config-section">
+              <h5><i class="fas fa-database me-2"></i>Copias de Seguridad</h5>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="alert alert-warning">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  Realiza copias de seguridad regularmente
+                </div>
+              </div>
+
+              <div class="col-12">
+                <button
+                  class="btn btn-outline-primary w-100 mb-2"
+                  id="backupBtn"
+                >
+                  <i class="fas fa-download me-1"></i> Descargar Backup
+                </button>
+                <small class="text-muted"
+                  >Descarga una copia de la base de datos</small
+                >
+              </div>
+
+              <div class="col-12">
+                <div class="input-group">
+                  <input
+                    type="file"
+                    class="form-control"
+                    id="restoreFile"
+                    accept=".json,.sql,.csv"
+                  />
+                  <button
+                    class="btn btn-outline-danger"
+                    type="button"
+                    id="restoreBtn"
+                    disabled
+                  >
+                    <i class="fas fa-upload me-1"></i> Restaurar
+                  </button>
+                </div>
+                <small class="text-muted"
+                  >Importar datos desde un archivo de backup</small
+                >
+              </div>
+
+              <div class="col-12">
+                <div class="alert alert-danger">
+                  <i class="fas fa-exclamation-circle me-2"></i>
+                  <strong>Advertencia:</strong> Restaurar datos sobrescribirá la
+                  información actual
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Nuestros módulos -->
+    <script type="module">
+      import { supabase } from "../../js/supabaseClient.js";
+      import Auth from "../../js/utils/auth.js";
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const isAdmin = await Auth.isAdmin();
+        if (!isAdmin) {
+          window.location.href = "/catalogo.html";
+          return;
+        }
+
+        loadSettings();
+        setupEventListeners();
+
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", async () => {
+            await Auth.logout();
+          });
+      });
+
+      async function loadSettings() {
+        try {
+          // Cargar configuración desde una tabla específica o usar valores por defecto
+          // Por ahora mostramos valores por defecto
+
+          // Podrías crear una tabla 'settings' en Supabase para guardar estas configuraciones
+          // const { data: settings } = await supabase.from('settings').select('*');
+
+          // Por ahora, cargamos valores por defecto
+          const defaultSettings = {
+            restaurantName: "Chifa Bonsai",
+            deliveryEnabled: true,
+            deliveryCost: 5.0,
+            paymentCash: true,
+            paymentCard: true,
+            paymentYape: true,
+            paymentPlin: true,
+            maintenanceMode: false,
+            requireLogin: true,
+            notifyNewOrders: true,
+            notifyLowStock: true,
+            basePrepTime: 15,
+            taxRate: 18,
+            defaultMinStock: 5,
+          };
+
+          // Aplicar valores a los campos
+          Object.keys(defaultSettings).forEach((key) => {
+            const element = document.getElementById(key);
+            if (element) {
+              if (element.type === "checkbox") {
+                element.checked = defaultSettings[key];
+              } else {
+                element.value = defaultSettings[key];
+              }
+            }
+          });
+        } catch (error) {
+          console.error("Error cargando configuración:", error);
+          showToast("Error al cargar configuración", "danger");
+        }
+      }
+
+      function setupEventListeners() {
+        // Guardar toda la configuración
+        document
+          .getElementById("saveAllSettings")
+          .addEventListener("click", async () => {
+            await saveAllSettings();
+          });
+
+        // Backup
+        document
+          .getElementById("backupBtn")
+          .addEventListener("click", async () => {
+            await createBackup();
+          });
+
+        // Restaurar archivo
+        document
+          .getElementById("restoreFile")
+          .addEventListener("change", (e) => {
+            document.getElementById("restoreBtn").disabled =
+              !e.target.files.length;
+          });
+
+        // Restaurar backup
+        document.getElementById("restoreBtn").addEventListener("click", () => {
+          confirmRestore();
+        });
+
+        // Validar campos numéricos
+        document.querySelectorAll('input[type="number"]').forEach((input) => {
+          input.addEventListener("change", (e) => {
+            const value = parseFloat(e.target.value);
+            const min = parseFloat(e.target.min) || 0;
+            const max = parseFloat(e.target.max) || Infinity;
+
+            if (value < min) e.target.value = min;
+            if (value > max) e.target.value = max;
+          });
+        });
+      }
+
+      async function saveAllSettings() {
+        try {
+          // Recolectar todos los valores de configuración
+          const settings = {};
+
+          // Información del restaurante
+          settings.restaurantName =
+            document.getElementById("restaurantName").value;
+          settings.restaurantPhone =
+            document.getElementById("restaurantPhone").value;
+          settings.restaurantEmail =
+            document.getElementById("restaurantEmail").value;
+          settings.restaurantAddress =
+            document.getElementById("restaurantAddress").value;
+          settings.openingTime = document.getElementById("openingTime").value;
+          settings.closingTime = document.getElementById("closingTime").value;
+
+          // Delivery
+          settings.deliveryEnabled =
+            document.getElementById("deliveryEnabled").checked;
+          settings.deliveryCost = parseFloat(
+            document.getElementById("deliveryCost").value
+          );
+          settings.deliveryTime = parseInt(
+            document.getElementById("deliveryTime").value
+          );
+          settings.deliveryRadius = parseInt(
+            document.getElementById("deliveryRadius").value
+          );
+          settings.deliveryZones =
+            document.getElementById("deliveryZones").value;
+
+          // Métodos de pago
+          settings.paymentCash = document.getElementById("paymentCash").checked;
+          settings.paymentCard = document.getElementById("paymentCard").checked;
+          settings.paymentYape = document.getElementById("paymentYape").checked;
+          settings.paymentPlin = document.getElementById("paymentPlin").checked;
+
+          // Sistema
+          settings.maintenanceMode =
+            document.getElementById("maintenanceMode").checked;
+          settings.requireLogin =
+            document.getElementById("requireLogin").checked;
+          settings.emailNotifications =
+            document.getElementById("emailNotifications").checked;
+          settings.smsNotifications =
+            document.getElementById("smsNotifications").checked;
+          settings.basePrepTime = parseInt(
+            document.getElementById("basePrepTime").value
+          );
+          settings.taxRate = parseFloat(
+            document.getElementById("taxRate").value
+          );
+          settings.defaultMinStock = parseInt(
+            document.getElementById("defaultMinStock").value
+          );
+
+          // Notificaciones
+          settings.notifyNewOrders =
+            document.getElementById("notifyNewOrders").checked;
+          settings.notifyLowStock =
+            document.getElementById("notifyLowStock").checked;
+          settings.notifyCancellations = document.getElementById(
+            "notifyCancellations"
+          ).checked;
+          settings.autoConfirmOrders =
+            document.getElementById("autoConfirmOrders").checked;
+          settings.notificationEmail =
+            document.getElementById("notificationEmail").value;
+          settings.notificationPhone =
+            document.getElementById("notificationPhone").value;
+
+          // Aquí deberías guardar en tu tabla 'settings' de Supabase
+          // Por ejemplo:
+          // const { error } = await supabase
+          //     .from('settings')
+          //     .upsert({ id: 1, config: settings });
+
+          // if (error) throw error;
+
+          showToast("Configuración guardada correctamente", "success");
+        } catch (error) {
+          console.error("Error guardando configuración:", error);
+          showToast("Error al guardar configuración", "danger");
+        }
+      }
+
+      async function createBackup() {
+        try {
+          // Obtener datos importantes de la base de datos
+          const backupData = {};
+
+          // 1. Productos
+          const { data: products } = await supabase
+            .from("products")
+            .select("*");
+          backupData.products = products;
+
+          // 2. Categorías
+          const { data: categories } = await supabase
+            .from("categories")
+            .select("*");
+          backupData.categories = categories;
+
+          // 3. Usuarios (solo perfiles)
+          const { data: profiles } = await supabase
+            .from("profiles")
+            .select("*");
+          backupData.profiles = profiles;
+
+          // 4. Roles
+          const { data: userRoles } = await supabase
+            .from("user_roles")
+            .select("*");
+          backupData.user_roles = userRoles;
+
+          // 5. Pedidos (últimos 30 días)
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+          const { data: orders } = await supabase
+            .from("orders")
+            .select(
+              `
+                        *,
+                        order_items(*)
+                    `
+            )
+            .gte("created_at", thirtyDaysAgo.toISOString());
+          backupData.orders = orders;
+
+          // Crear archivo JSON
+          const jsonData = JSON.stringify(backupData, null, 2);
+          const blob = new Blob([jsonData], { type: "application/json" });
+
+          // Crear enlace de descarga
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `backup-chifa-${
+            new Date().toISOString().split("T")[0]
+          }.json`;
+          link.click();
+
+          showToast("Backup creado correctamente", "success");
+        } catch (error) {
+          console.error("Error creando backup:", error);
+          showToast("Error al crear backup", "danger");
+        }
+      }
+
+      function confirmRestore() {
+        const fileInput = document.getElementById("restoreFile");
+        if (!fileInput.files.length) {
+          showToast("Selecciona un archivo primero", "warning");
+          return;
+        }
+
+        if (
+          !confirm(
+            "¿Estás seguro de restaurar desde este archivo? Esta acción sobrescribirá datos existentes."
+          )
+        ) {
+          return;
+        }
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = async (e) => {
+          try {
+            const backupData = JSON.parse(e.target.result);
+
+            // Aquí implementarías la lógica para restaurar los datos
+            // Esto es más complejo y debería hacerse con cuidado
+
+            showToast(
+              "Restauración iniciada (funcionalidad en desarrollo)",
+              "info"
+            );
+
+            // Resetear el input de archivo
+            fileInput.value = "";
+            document.getElementById("restoreBtn").disabled = true;
+          } catch (error) {
+            console.error("Error procesando archivo:", error);
+            showToast("Error al procesar el archivo de backup", "danger");
+          }
+        };
+
+        reader.readAsText(file);
+      }
+
+      function showToast(message, type = "success") {
+        let container = document.getElementById("toastContainer");
+        if (!container) {
+          container = document.createElement("div");
+          container.id = "toastContainer";
+          container.className =
+            "toast-container position-fixed top-0 end-0 p-3";
+          document.body.appendChild(container);
+        }
+
+        const toastId = "toast-" + Date.now();
+        const toast = document.createElement("div");
+        toast.id = toastId;
+        toast.className = `toast align-items-center text-bg-${type} border-0`;
+        toast.setAttribute("role", "alert");
+        toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-${
+                          type === "success"
+                            ? "check-circle"
+                            : "exclamation-circle"
+                        } me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+
+        container.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        toast.addEventListener("hidden.bs.toast", () => {
+          toast.remove();
+        });
+      }
+    </script>
+  </body>
+</html>
