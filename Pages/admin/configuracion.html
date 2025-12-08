@@ -681,8 +681,8 @@ Ej: Miraflores, San Isidro, Surco, Barranco"
 
     <!-- Nuestros módulos -->
     <script type="module">
+      import Auth from "../../js/auth.js";
       import { supabase } from "../../js/supabaseClient.js";
-      import Auth from "../../js/utils/auth.js";
 
       document.addEventListener("DOMContentLoaded", async function () {
         const isAdmin = await Auth.isAdmin();

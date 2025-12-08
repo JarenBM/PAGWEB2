@@ -1,6 +1,7 @@
-// admin/productos-admin.js
-import { supabase } from './js/supabaseClient.js';
-import Auth from '../auth.js';
+// js/admin/productos-admin.js
+import Auth from "../auth.js";
+import { supabase } from "../supabaseClient.js";
+    
 
 class ProductosAdmin {
     constructor() {
@@ -55,38 +56,37 @@ class ProductosAdmin {
         }
     }
 
-    async loadProducts() {
-        try {
-            let query = supabase
-                .from('products')
-                .select(`
-                    *,
-                    categories(name)
-                `)
-                .order('created_at', { ascending: false });
+async loadProducts() {
+  try {
+    let query = supabase
+      .from('products')
+      .select(`
+        *,
+        categories(name)
+      `, { count: 'exact' })   // ✅ ahora sí devuelve count
+      .order('name', { ascending: true }); // ✅ ya no depende de created_at
 
-            // Filtrar por categoría
-            if (this.currentCategory !== 'all') {
-                query = query.eq('category_id', this.currentCategory);
-            }
-
-            // Paginación
-            const from = (this.currentPage - 1) * this.itemsPerPage;
-            const to = from + this.itemsPerPage - 1;
-            query = query.range(from, to);
-
-            const { data: products, error, count } = await query;
-
-            if (error) throw error;
-
-            this.displayProducts(products);
-            this.updatePagination(count);
-
-        } catch (error) {
-            console.error('Error cargando productos:', error);
-            this.showError('Error al cargar productos');
-        }
+    // Filtro por categoría
+    if (this.currentCategory !== 'all') {
+      query = query.eq('category_id', this.currentCategory);
     }
+
+    // Paginación
+    const from = (this.currentPage - 1) * this.itemsPerPage;
+    const to = from + this.itemsPerPage - 1;
+
+    const { data: products, error, count } = await query.range(from, to);
+
+    if (error) throw error;
+
+    this.displayProducts(products);
+    this.updatePagination(count);
+
+  } catch (error) {
+    console.error('❌ Error cargando productos:', error);
+    this.showError('Error al cargar productos');
+  }
+}
 
     displayProducts(products) {
         const tbody = document.getElementById('productsTableBody');
@@ -151,17 +151,18 @@ class ProductosAdmin {
                 <td>
                     <div class="btn-group btn-group-sm">
                         <button class="btn btn-outline-primary" 
-                                onclick="productosAdmin.editProduct(${product.id})"
+                                onclick="productosAdmin.editProduct('${product.id}')"
+
                                 title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button class="btn btn-outline-danger" 
-                                onclick="productosAdmin.confirmDelete(${product.id})"
+                                onclick="productosAdmin.confirmDelete('${product.id}')"
                                 title="Eliminar">
                             <i class="fas fa-trash"></i>
                         </button>
                         <button class="btn btn-outline-secondary" 
-                                onclick="productosAdmin.toggleStatus(${product.id})"
+                                onclick="productosAdmin.toggleStatus('${product.id}')"
                                 title="${product.is_active ? 'Desactivar' : 'Activar'}">
                             <i class="fas ${product.is_active ? 'fa-eye-slash' : 'fa-eye'}"></i>
                         </button>

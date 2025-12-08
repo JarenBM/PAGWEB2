@@ -1,5 +1,6 @@
 // js/auth.js
-import { supabase } from '/supabaseClient.js'
+import { supabase } from "./supabaseClient.js";
+
 
 const Auth = {
   // Verificar si está autenticado
@@ -134,9 +135,9 @@ const Auth = {
     const isAdmin = await this.isAdmin()
     
     if (isAdmin) {
-      window.location.href = '/pages/admin/dashboard.html'
+      window.location.href = '/Pages/admin/dashboard.html'
     } else {
-      window.location.href = '/catalogo.html'
+      window.location.href = '/carrito.html'
     }
   }
 }

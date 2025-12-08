@@ -1,6 +1,6 @@
 // js/admin/dashboard.js
-import { supabase } from './js/supabaseClient.js'
-import Auth from '../auth.js'
+import { supabase } from '/js/supabaseClient.js'
+import Auth from './js/auth.js'
 
 class AdminDashboard {
     constructor() {

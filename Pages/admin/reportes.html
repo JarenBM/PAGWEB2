@@ -210,19 +210,9 @@
                 <span class="input-group-text"
                   ><i class="fas fa-calendar"></i
                 ></span>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="dateFrom"
-                  value="${getDateDaysAgo(7)}"
-                />
+                <input type="date" class="form-control" id="dateFrom" />
                 <span class="input-group-text">a</span>
-                <input
-                  type="date"
-                  class="form-control"
-                  id="dateTo"
-                  value="${getTodayDate()}"
-                />
+                <input type="date" class="form-control" id="dateTo" />
                 <button
                   class="btn btn-primary"
                   type="button"
@@ -491,8 +481,8 @@
 
     <!-- Nuestros módulos -->
     <script type="module">
-      import { supabase } from "../../js/supabaseClient.js";
-      import Auth from "../../js/utils/auth.js";
+      import { supabase } from "/js/supabaseClient.js";
+      import Auth from "/js/auth.js";
 
       let charts = {};
       let reportData = {};
@@ -514,6 +504,9 @@
             await Auth.logout();
           });
       });
+      // Inicializar fechas correctamente
+      document.getElementById("dateFrom").value = getDateDaysAgo(7);
+      document.getElementById("dateTo").value = getTodayDate();
 
       function getTodayDate() {
         const today = new Date();
@@ -528,29 +521,52 @@
 
       async function loadReports() {
         try {
-          const dateFrom = document.getElementById("dateFrom").value;
-          const dateTo = document.getElementById("dateTo").value;
+          const dateFromInput = document.getElementById("dateFrom").value;
+          const dateToInput = document.getElementById("dateTo").value;
 
-          // Obtener pedidos del período
+          if (!dateFromInput || !dateToInput) {
+            showToast("Selecciona un rango de fechas válido", "warning");
+            return;
+          }
+
+          // ✅ Convertir a formato ISO válido para Supabase
+          const dateFrom = new Date(
+            dateFromInput + "T00:00:00.000Z"
+          ).toISOString();
+          const dateTo = new Date(dateToInput + "T23:59:59.999Z").toISOString();
+
+          console.log("Fechas enviadas a Supabase:", dateFrom, dateTo);
+
+          // ✅ Obtener pedidos correctamente
           const { data: orders, error } = await supabase
             .from("orders")
             .select(
               `
-                        *,
-                        order_items(*),
-                        profiles(full_name)
-                    `
+        *,
+        order_items(*),
+        profiles(full_name)
+      `
             )
-            .gte("created_at", dateFrom + "T00:00:00")
-            .lte("created_at", dateTo + "T23:59:59")
-            .order("created_at");
+            .gte("created_at", dateFrom)
+            .lte("created_at", dateTo)
+            .order("created_at", { ascending: true });
 
           if (error) throw error;
 
-          // Procesar datos para reportes
-          reportData = processReportData(orders || []);
+          // ✅ Siempre asegurar estructura válida
+          const safeOrders = orders || [];
 
-          // Actualizar UI
+          // ✅ Procesar datos
+          const reportData = processReportData(safeOrders);
+
+          // ✅ VALIDACIÓN CLAVE ANTI-CRASH
+          if (!reportData) {
+            console.error("processReportData devolvió undefined");
+            showToast("Error interno procesando reportes", "danger");
+            return;
+          }
+
+          // ✅ Actualizar UI
           updateStats(reportData);
           updateCharts(reportData);
           updateDetailedReports(reportData);
@@ -574,54 +590,58 @@
           deliveryZones: {},
         };
 
-        // Procesar cada pedido
         orders.forEach((order) => {
-          // Ingresos
-          data.totalRevenue += parseFloat(order.total || 0);
+          const total = parseFloat(order.total || 0);
+          data.totalRevenue += total;
 
-          // Métodos de pago
+          // ✅ Métodos de pago
           const paymentMethod = order.payment_method || "efectivo";
           data.paymentMethods[paymentMethod] =
             (data.paymentMethods[paymentMethod] || 0) + 1;
 
-          // Fecha para ventas por día
-          const date = new Date(order.created_at).toLocaleDateString();
-          data.dailySales[date] =
-            (data.dailySales[date] || 0) + parseFloat(order.total || 0);
+          // ✅ Ventas por día (formato ISO limpio)
+          const d = new Date(order.created_at);
+          const dateKey = d.toISOString().split("T")[0]; // YYYY-MM-DD
+          data.dailySales[dateKey] = (data.dailySales[dateKey] || 0) + total;
 
-          // Hora para horarios pico
-          const hour = new Date(order.created_at).getHours();
+          // ✅ Horarios pico
+          const hour = d.getHours();
           data.peakHours[hour] = (data.peakHours[hour] || 0) + 1;
 
-          // Productos vendidos
-          order.order_items?.forEach((item) => {
-            const productName = item.product_name;
-            if (!data.topProducts[productName]) {
-              data.topProducts[productName] = {
-                quantity: 0,
-                revenue: 0,
-              };
-            }
-            data.topProducts[productName].quantity += item.quantity;
-            data.topProducts[productName].revenue += item.subtotal;
-          });
+          // ✅ Productos vendidos (SEGURO)
+          if (Array.isArray(order.order_items)) {
+            order.order_items.forEach((item) => {
+              const productName = item.product_name || "Producto sin nombre";
+              const quantity = Number(item.quantity || 0);
+              const subtotal = Number(item.subtotal || 0);
 
-          // Clientes
-          const customerName = order.customer_name;
+              if (!data.topProducts[productName]) {
+                data.topProducts[productName] = {
+                  quantity: 0,
+                  revenue: 0,
+                };
+              }
+
+              data.topProducts[productName].quantity += quantity;
+              data.topProducts[productName].revenue += subtotal;
+            });
+          }
+
+          // ✅ Clientes (SEGURO)
+          const customerName = order.customer_name || "Cliente sin nombre";
+
           if (!data.customers[customerName]) {
             data.customers[customerName] = {
               orders: 0,
               totalSpent: 0,
             };
           }
-          data.customers[customerName].orders += 1;
-          data.customers[customerName].totalSpent += parseFloat(
-            order.total || 0
-          );
 
-          // Zonas de delivery (si aplica)
+          data.customers[customerName].orders += 1;
+          data.customers[customerName].totalSpent += total;
+
+          // ✅ Zonas de delivery (robusto)
           if (order.order_type === "delivery" && order.delivery_address) {
-            // Extraer zona aproximada (esto es un ejemplo simple)
             const address = order.delivery_address.toLowerCase();
             let zone = "Otra";
 
@@ -635,12 +655,11 @@
           }
         });
 
-        // Calcular ticket promedio
+        // ✅ Ticket promedio
         data.avgTicket =
           data.totalOrders > 0 ? data.totalRevenue / data.totalOrders : 0;
 
-        // Obtener nuevos clientes (simplificado)
-        // En un sistema real, compararías con el período anterior
+        // ✅ Nuevos clientes
         data.newCustomers = Object.keys(data.customers).length;
 
         return data;
@@ -823,35 +842,53 @@
       }
 
       function updateCharts(data) {
-        // Ventas por día
-        const dates = Object.keys(data.dailySales).sort();
-        const sales = dates.map((date) => data.dailySales[date]);
+        if (!data) {
+          console.error("updateCharts recibió data = undefined");
+          return;
+        }
 
-        charts.sales.data.labels = dates;
-        charts.sales.data.datasets[0].data = sales;
-        charts.sales.update();
+        // ===============================
+        // ✅ VENTAS POR DÍA
+        // ===============================
+        const dailySales = data.dailySales || {};
+        const dates = Object.keys(dailySales).sort();
+        const sales = dates.map((date) => dailySales[date]);
 
-        // Métodos de pago (usar datos reales cuando estén disponibles)
-        // Por ahora mantenemos datos de ejemplo
+        if (charts.sales) {
+          charts.sales.data.labels = dates;
+          charts.sales.data.datasets[0].data = sales;
+          charts.sales.update();
+        }
 
-        // Productos más vendidos (top 10)
-        const topProducts = Object.entries(data.topProducts)
+        // ===============================
+        // ✅ PRODUCTOS MÁS VENDIDOS
+        // ===============================
+        const topProductsData = data.topProducts || {};
+
+        const topProducts = Object.entries(topProductsData)
           .sort((a, b) => b[1].quantity - a[1].quantity)
           .slice(0, 10);
 
-        charts.products.data.labels = topProducts.map((p) => p[0]);
-        charts.products.data.datasets[0].data = topProducts.map(
-          (p) => p[1].quantity
-        );
-        charts.products.update();
+        if (charts.products) {
+          charts.products.data.labels = topProducts.map((p) => p[0]);
+          charts.products.data.datasets[0].data = topProducts.map(
+            (p) => p[1].quantity
+          );
+          charts.products.update();
+        }
 
-        // Horarios pico
+        // ===============================
+        // ✅ HORAS PICO
+        // ===============================
+        const peakHours = data.peakHours || {};
         const hours = Array.from({ length: 24 }, (_, i) => i);
-        const hourCounts = hours.map((hour) => data.peakHours[hour] || 0);
+        const hourCounts = hours.map((hour) => peakHours[hour] || 0);
 
-        charts.hours.data.labels = hours.map((h) => `${h}:00`);
-        charts.hours.data.datasets[0].data = hourCounts;
-        charts.hours.update();
+        if (charts.hours) {
+          charts.hours.data.labels = hours.map((h) => `${h}:00`);
+          charts.hours.data.datasets[0].data = hourCounts;
+          charts.hours.update();
+        }
       }
 
       function updateDetailedReports(data) {

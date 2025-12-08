@@ -581,9 +581,15 @@
               <i class="fas fa-sign-in-alt"></i>
               <span id="btnText">Ingresar al Sistema</span>
             </button>
+            <div class="text-center mt-3">
+              <small class="text-muted">¿No tienes cuenta?</small><br />
+              <a href="registro.html" class="fw-bold text-decoration-none">
+                Registrarse aquí
+              </a>
+            </div>
 
             <div class="back-link">
-              <a href="/catalogo.html">
+              <a href="/carrito.html">
                 <i class="fas fa-arrow-left"></i>
                 Volver al catálogo principal
               </a>
@@ -751,7 +757,7 @@
                 window.location.href = "/Pages/empleado/pedidos.html";
               } else {
                 console.log("🚀 Redirigiendo a catálogo...");
-                window.location.href = "/catalogo.html";
+                window.location.href = "/carrito.html";
               }
             }, 1500);
           } catch (error) {

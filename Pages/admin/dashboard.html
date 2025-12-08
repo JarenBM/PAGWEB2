@@ -434,8 +434,8 @@
     <!-- Nuestros módulos -->
     <script type="module">
       // Importar módulos
-      import Auth from "../../js/utils/auth.js";
-      import { supabase } from "../../js/supabaseClient.js";
+      import { supabase } from "/js/supabaseClient.js";
+      import Auth from "/js/auth.js";
 
       // Verificar autenticación
       document.addEventListener("DOMContentLoaded", async function () {
@@ -516,7 +516,7 @@
           const { data: lowStock } = await supabase
             .from("products")
             .select("id, name, stock, min_stock")
-            .lte("stock", supabase.raw("min_stock + 5"))
+            .lte("stock", 10) // ✅ valor fijo seguro
             .eq("is_active", true)
             .limit(5);
 

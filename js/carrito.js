@@ -1,380 +1,195 @@
-// js/carrito.js
-// Carrito funcional para el carrito.html que pegaste.
-// Guarda en localStorage, renderiza tabla, calcula totales, controla modales.
+import { supabase } from "./supabaseClient.js";
 
-(function () {
-  const STORAGE_KEY = "chifa_cart_v1";
+// ===============================
+// 🛒 CARRITO LOCAL
+// ===============================
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  // Reglas de negocio
-  const ENVIO_BASE = 5.00;        // costo de envío por defecto
-  const ENVIO_GRATIS_SOBRE = 50;  // envío gratis si subtotal >= este valor
+const cartBody = document.getElementById("cart-body");
+const subtotalEl = document.getElementById("subtotal");
+const envioEl = document.getElementById("envio");
+const totalEl = document.getElementById("total");
+const finalizarBtn = document.getElementById("finalizar-compra");
+const productsContainer = document.getElementById("products-container");
 
-  // Helpers
-  const $ = (sel, ctx = document) => ctx.querySelector(sel);
-  const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+// ===============================
+// 📦 CARGAR PRODUCTOS DESDE SUPABASE
+// ===============================
+async function loadProducts() {
+  const { data: products, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("is_active", true)
+    .order("created_at", { ascending: false });
 
-  const formatMoney = (n) => {
-    // formatea en "S/. 12.34"
-    return `S/. ${Number(n).toFixed(2)}`;
-  };
-
-  // Carga desde localStorage
-  function loadCart() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) {
-      console.error("Error leyendo carrito:", e);
-      return {};
-    }
+  if (error) {
+    console.error("Error cargando productos:", error);
+    return;
   }
 
-  // Guarda y actualiza UI
-  function saveCart(cart) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
-    renderCart(cart);
-  }
+  productsContainer.innerHTML = "";
 
-  // Calcula subtotal
-  function calcSubtotal(cart) {
-    return Object.values(cart).reduce((s, it) => s + (Number(it.price) * Number(it.qty)), 0);
-  }
-
-  // Calcula envio segun reglas
-  function calcEnvio(subtotal) {
-    if (subtotal >= ENVIO_GRATIS_SOBRE) return 0;
-    if (subtotal <= 0) return 0;
-    return ENVIO_BASE;
-  }
-
-  // Render de la tabla del carrito (tbody id="cart-body")
-  function renderCart(cart) {
-    const tbody = $("#cart-body");
-    const subtotalEl = $("#subtotal");
-    const envioEl = $("#envio");
-    const totalEl = $("#total");
-
-    if (!tbody || !subtotalEl || !envioEl || !totalEl) {
-      console.warn("Elementos del carrito no encontrados en DOM.");
-      return;
-    }
-
-    tbody.innerHTML = "";
-
-    const items = Object.values(cart);
-    if (items.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="3" class="text-muted text-center">No hay productos en el carrito.</td></tr>`;
-    } else {
-      items.forEach(item => {
-        // cada fila: producto | cantidad | acciones
-        // adaptado a tu cabecera (Producto, Cant., '')
-        const tr = document.createElement("tr");
-
-        // Col 1: imagen + nombre + precio unitario
-        const tdProd = document.createElement("td");
-        tdProd.style.minWidth = "220px";
-        tdProd.innerHTML = `
-          <div class="d-flex align-items-center gap-2">
-            <img src="${escapeHtml(item.image || '')}" alt="${escapeHtml(item.name)}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid rgba(0,0,0,0.05)">
-            <div>
-              <div class="fw-semibold">${escapeHtml(item.name)}</div>
-              <div class="text-muted small">S/. ${Number(item.price).toFixed(2)} c/u</div>
-            </div>
+  products.forEach((product) => {
+    productsContainer.innerHTML += `
+      <div class="col-md-3">
+        <div class="card h-100">
+          <img src="${product.image_url || 'img/no-image.png'}" class="card-img-top">
+          <div class="card-body d-flex flex-column">
+            <h5>${product.name}</h5>
+            <p class="text-muted">${product.short_description || ""}</p>
+            <p class="fw-bold mt-auto">S/${product.price}</p>
+            <button 
+              class="btn btn-danger mt-2"
+              onclick="addToCart('${product.id}', '${product.name}', ${product.price})"
+            >
+              Agregar
+            </button>
           </div>
-        `;
-
-        // Col 2: cantidad + controls
-        const tdQty = document.createElement("td");
-        tdQty.className = "text-center";
-        tdQty.innerHTML = `
-          <div class="d-flex align-items-center justify-content-center gap-2">
-            <button class="btn btn-sm btn-outline-secondary btn-decrease" data-id="${item.id}">-</button>
-            <div class="px-2">${Number(item.qty)}</div>
-            <button class="btn btn-sm btn-outline-secondary btn-increase" data-id="${item.id}">+</button>
-          </div>
-        `;
-
-        // Col 3: subtotal línea + eliminar
-        const tdActions = document.createElement("td");
-        tdActions.className = "text-end";
-        const lineTotal = Number(item.qty) * Number(item.price);
-        tdActions.innerHTML = `
-          <div class="fw-bold">S/. ${lineTotal.toFixed(2)}</div>
-          <div class="mt-1">
-            <button class="btn btn-sm btn-link text-danger btn-remove" data-id="${item.id}">Eliminar</button>
-          </div>
-        `;
-
-        tr.appendChild(tdProd);
-        tr.appendChild(tdQty);
-        tr.appendChild(tdActions);
-
-        tbody.appendChild(tr);
-      });
-    }
-
-    const subtotal = calcSubtotal(cart);
-    const envio = calcEnvio(subtotal);
-    const total = subtotal + envio;
-
-    subtotalEl.textContent = formatMoney(subtotal);
-    envioEl.textContent = formatMoney(envio);
-    totalEl.textContent = formatMoney(total);
-  }
-
-  // Escapa texto para evitar inyección al renderizar HTML
-  function escapeHtml(str) {
-    if (!str && str !== 0) return "";
-    return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  // API pública para interacción por otros scripts
-  const CART = {
-    add(item) {
-      // item: { id, name, price, image, qty }
-      if (!item || !item.id) return;
-      const cart = loadCart();
-      if (!cart[item.id]) {
-        cart[item.id] = {
-          id: item.id,
-          name: item.name || "Producto",
-          price: Number(item.price) || 0,
-          image: item.image || "",
-          qty: Number(item.qty) || 1
-        };
-      } else {
-        cart[item.id].qty = Number(cart[item.id].qty) + (Number(item.qty) || 1);
-      }
-      saveCart(cart);
-      showToast(`${item.name} agregado al carrito`);
-    },
-    setQty(id, qty) {
-      const cart = loadCart();
-      if (!cart[id]) return;
-      cart[id].qty = Number(qty);
-      if (cart[id].qty <= 0) delete cart[id];
-      saveCart(cart);
-    },
-    remove(id) {
-      const cart = loadCart();
-      if (!cart[id]) return;
-      delete cart[id];
-      saveCart(cart);
-    },
-    clear() {
-      localStorage.removeItem(STORAGE_KEY);
-      renderCart({});
-    },
-    get() {
-      return loadCart();
-    },
-    // EL NUEVO BLOQUE PARA LA CONEXIÓN CON SUPABASE
-    async checkout() {
-  const cart = loadCart();
-  if (Object.keys(cart).length === 0) {
-    showToast("El carrito está vacío", true);
-    return;
-  }
-
-  // 1. Verificar si el usuario está logueado
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    showToast("Debes iniciar sesión para continuar", true);
-    const loginModalEl = document.getElementById("loginModal");
-    if (loginModalEl) {
-      const mdl = new bootstrap.Modal(loginModalEl);
-      mdl.show();
-    }
-    return;
-  }
-
-  // 2. Cálculos
-  const items = Object.values(cart);
-  const subtotal = calcSubtotal(cart);
-  const envio = calcEnvio(subtotal);
-  const total = subtotal + envio;
-
-  // 3. Insertar pedido
-  const { data: pedido, error: errPedido } = await supabase
-    .from("pedidos")
-    .insert({
-      usuario_id: user.id,
-      subtotal,
-      envio,
-      total,
-      estado: "pendiente",
-      creado_en: new Date().toISOString()
-    })
-    .select()
-    .single();
-
-  if (errPedido) {
-    console.error(errPedido);
-    showToast("Error al registrar pedido", true);
-    return;
-  }
-
-  // 4. Insertar cada item del carrito
-  const detalles = items.map(it => ({
-    pedido_id: pedido.id,
-    producto_id: it.id,
-    cantidad: it.qty,
-    precio_unit: it.price
-  }));
-
-  const { error: errItems } = await supabase
-    .from("pedido_items")
-    .insert(detalles);
-
-  if (errItems) {
-    console.error(errItems);
-    showToast("Error al registrar detalles", true);
-    return;
-  }
-
-  // 5. Mostrar modal de éxito
-  const successModalEl = document.getElementById("successModal");
-  if (successModalEl) {
-    const mdl = new bootstrap.Modal(successModalEl);
-    mdl.show();
-  }
-
-  // 6. Limpiar carrito
-  setTimeout(() => {
-    CART.clear();
-  }, 800);
-
-  showToast("¡Pedido realizado con éxito!");
+        </div>
+      </div>
+    `;
+  });
 }
 
-  };
+window.addToCart = (id, name, price) => {
+  const existing = cart.find((p) => p.id === id);
 
-  // Notificación simple (toast usando element temporal)
-  function showToast(message, isError = false) {
-    // Si tu proyecto ya tiene un sistema de toast, conéctalo aquí.
-    // Aquí creamos un toast simple y lo destruimos.
-    const div = document.createElement("div");
-    div.style.position = "fixed";
-    div.style.right = "20px";
-    div.style.bottom = "20px";
-    div.style.zIndex = 1200;
-    div.style.padding = "12px 16px";
-    div.style.borderRadius = "8px";
-    div.style.background = isError ? "#333" : "#c62828";
-    div.style.color = "#fff";
-    div.style.boxShadow = "0 6px 20px rgba(0,0,0,0.18)";
-    div.textContent = message;
-    document.body.appendChild(div);
-    setTimeout(() => {
-      div.style.opacity = "0";
-      div.style.transition = "opacity 300ms";
-    }, 1200);
-    setTimeout(() => div.remove(), 1600);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ id, name, price, qty: 1 });
   }
 
-  // Delegación de eventos para botones en la UI
-  document.addEventListener("click", function (e) {
-    const inc = e.target.closest(".btn-increase");
-    const dec = e.target.closest(".btn-decrease");
-    const rem = e.target.closest(".btn-remove");
-    const addBtn = e.target.closest(".btn-add-cart"); // coincide con tu HTML
-    const finalizar = e.target.closest("#finalizar-compra");
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+};
 
-    if (addBtn) {
-      // leer datos desde atributos data-*
-      const name = addBtn.dataset.nombre || addBtn.dataset.name;
-      const price = parseFloat(addBtn.dataset.precio || addBtn.dataset.price || 0);
-      const image = addBtn.dataset.imagen || addBtn.dataset.image || "";
-      const id = addBtn.dataset.id || (`p_${Math.random().toString(36).slice(2,9)}`);
+// ===============================
+// 🖼️ RENDER CARRITO
+// ===============================
+function renderCart() {
+  cartBody.innerHTML = "";
+  let subtotal = 0;
 
-      CART.add({ id, name, price, image, qty: 1 });
-      return;
-    }
+  cart.forEach((item, index) => {
+    subtotal += item.qty * item.price;
 
-    if (inc) {
-      const id = inc.dataset.id;
-      const cart = CART.get();
-      if (!cart[id]) return;
-      CART.setQty(id, Number(cart[id].qty) + 1);
-      return;
-    }
-
-    if (dec) {
-      const id = dec.dataset.id;
-      const cart = CART.get();
-      if (!cart[id]) return;
-      CART.setQty(id, Number(cart[id].qty) - 1);
-      return;
-    }
-
-    if (rem) {
-      const id = rem.dataset.id;
-      CART.remove(id);
-      return;
-    }
-
-    if (finalizar) {
-      // Si quieres exigir login, aquí puedes comprobarlo y abrir #loginModal
-      // Por ahora mostraremos el modal de login si existe, sino procederemos a checkout.
-      const loginModalEl = document.getElementById("loginModal");
-      if (loginModalEl) {
-        // lógica simple: si no existe "user_logged" en localStorage pedimos login
-        const user = localStorage.getItem("chifa_user_demo");
-        if (!user) {
-          const loginModal = new bootstrap.Modal(loginModalEl);
-          loginModal.show();
-          return;
-        }
-      }
-      // procede a checkout
-      CART.checkout();
-      return;
-    }
+    cartBody.innerHTML += `
+      <tr>
+        <td>${item.name}</td>
+        <td>
+          <button class="btn btn-sm btn-secondary" onclick="decrement(${index})">-</button>
+          ${item.qty}
+          <button class="btn btn-sm btn-secondary" onclick="increment(${index})">+</button>
+        </td>
+        <td>S/${(item.qty * item.price).toFixed(2)}</td>
+        <td>
+          <button class="btn btn-sm btn-danger" onclick="removeItem(${index})">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
   });
 
-  // Listener para botones del modal login (demo)
-  document.addEventListener("DOMContentLoaded", function () {
-    // Inicializar render
-    renderCart(loadCart());
+  const envio = subtotal > 0 ? 5 : 0;
+  const total = subtotal + envio;
 
-    // Login demo: si presionan Iniciar sesión en modal, marcar usuario y cerrar
-    const btnLogin = document.getElementById("btnLogin");
-    if (btnLogin) {
-      btnLogin.addEventListener("click", function () {
-        const email = document.getElementById("loginEmail")?.value?.trim();
-        const pass = document.getElementById("loginPassword")?.value?.trim();
-        const alertEl = document.getElementById("loginAlert");
-        if (!email || !pass) {
-          if (alertEl) {
-            alertEl.classList.remove("d-none");
-            alertEl.textContent = "Por favor, complete ambos campos.";
-          }
-          return;
-        }
-        // Demo: guardamos un indicador de usuario (en producción usar Supabase Auth)
-        localStorage.setItem("chifa_user_demo", JSON.stringify({ email }));
-        // cerrar modal
-        const loginModalEl = document.getElementById("loginModal");
-        if (loginModalEl) {
-          const mdl = bootstrap.Modal.getInstance(loginModalEl) || new bootstrap.Modal(loginModalEl);
-          mdl.hide();
-        }
-        showToast("Sesión iniciada");
-      });
-    }
+  subtotalEl.textContent = `S/${subtotal.toFixed(2)}`;
+  envioEl.textContent = `S/${envio.toFixed(2)}`;
+  totalEl.textContent = `S/${total.toFixed(2)}`;
 
-    // Si el modal de éxito existe, aseguramos que al cerrarlo no quede nada raro
-    const successModalEl = document.getElementById("successModal");
-    if (successModalEl) {
-      successModalEl.addEventListener("hidden.bs.modal", function () {
-        // nada por ahora
-      });
-    }
-  });
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
 
-})();
+window.increment = (i) => {
+  cart[i].qty++;
+  renderCart();
+};
+
+window.decrement = (i) => {
+  if (cart[i].qty > 1) cart[i].qty--;
+  renderCart();
+};
+
+window.removeItem = (i) => {
+  cart.splice(i, 1);
+  renderCart();
+};
+
+renderCart();
+loadProducts();
+
+// ===============================
+// 🔐 FINALIZAR COMPRA REAL
+// ===============================
+finalizarBtn.addEventListener("click", async () => {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const user = sessionData?.session?.user;
+
+  if (!user) {
+  localStorage.setItem("redirect_after_login", "carrito.html");
+  window.location.href = "Pages/auth/login.html";
+  return;
+}
+
+
+  if (cart.length === 0) {
+    alert("Tu carrito está vacío");
+    return;
+  }
+
+  try {
+    // Obtener perfil
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, email, phone, address")
+      .eq("id", user.id)
+      .single();
+
+    const total = parseFloat(totalEl.textContent.replace("S/", ""));
+
+    // Crear pedido
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .insert({
+        user_id: user.id,
+        customer_name: profile?.full_name || "Cliente",
+        customer_email: profile?.email || user.email,
+        customer_phone: profile?.phone || "000000000",
+        delivery_address: profile?.address || "Local",
+        total,
+        order_status: "pendiente",
+        order_type: "local"
+      })
+      .select()
+      .single();
+
+    if (orderError) throw orderError;
+
+    // Crear order_items reales
+    const items = cart.map((item) => ({
+      order_id: order.id,
+      product_id: item.id,
+      product_name: item.name,
+      unit_price: item.price,
+      quantity: item.qty
+    }));
+
+    const { error: itemsError } = await supabase
+      .from("order_items")
+      .insert(items);
+
+    if (itemsError) throw itemsError;
+
+    cart = [];
+    localStorage.removeItem("cart");
+    renderCart();
+
+    alert("✅ Pedido registrado correctamente");
+
+  } catch (error) {
+    console.error("Error finalizando compra:", error);
+    alert("Error al procesar el pedido");
+  }
+});

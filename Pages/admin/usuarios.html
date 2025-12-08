@@ -492,8 +492,8 @@
 
     <!-- Nuestros módulos -->
     <script type="module">
-      import { supabase } from "../../js/supabaseClient.js";
-      import Auth from "../../js/utils/auth.js";
+      import { supabase } from "/js/supabaseClient.js";
+      import Auth from "/js/auth.js";
 
       let currentUsers = [];
       let usersTable = null;
@@ -522,13 +522,13 @@
             .from("profiles")
             .select(
               `
-                        *,
-                        user_roles(
-                            role,
-                            is_active
-                        ),
-                        orders(count)
-                    `
+    *,
+    user_roles!user_roles_user_id_fkey(
+      role,
+      is_active
+    ),
+    orders(count)
+  `
             )
             .order("created_at", { ascending: false });
 
@@ -811,7 +811,7 @@
             .select(
               `
                         *,
-                        user_roles(role, is_active)
+                        user_roles!user_roles_user_id_fkey(role, is_active)
                     `
             )
             .eq("id", userId)
