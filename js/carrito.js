@@ -127,17 +127,23 @@ finalizarBtn.addEventListener("click", async () => {
   const { data: sessionData } = await supabase.auth.getSession();
   const user = sessionData?.session?.user;
 
+  // ✅ VALIDACIÓN REAL DE SESIÓN
   if (!user) {
-  localStorage.setItem("redirect_after_login", "carrito.html");
-  window.location.href = "Pages/auth/login.html";
-  return;
-}
+    alert("Debes iniciar sesión para finalizar tu compra.");
 
+    // ✅ Guardamos que el usuario quiso comprar
+    localStorage.setItem("redirect_after_login", "carrito");
+
+    // ✅ Redirigimos al login REAL
+    window.location.href = "Pages/auth/login.html";
+    return;
+  }
 
   if (cart.length === 0) {
     alert("Tu carrito está vacío");
     return;
   }
+
 
   try {
     // Obtener perfil
